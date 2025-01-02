@@ -97,6 +97,7 @@ pub struct HSetCommand {
 #[derive(Debug)]
 pub struct HGetAllCommand {
     pub(crate) key: String,
+    pub(crate) sort: bool,
 }
 
 #[derive(Debug)]

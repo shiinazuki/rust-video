@@ -38,12 +38,19 @@ impl CommandExecutor for HGetAllCommand {
 
         match hmap {
             Some(hmap) => {
-                let mut ret = Vec::with_capacity(hmap.len() * 2);
+                let mut data = Vec::with_capacity(hmap.len() * 2);
                 for v in hmap.iter() {
                     let key = v.key().to_owned();
-                    ret.push(BulkString::new(key).into());
-                    ret.push(v.value().clone());
+                    data.push((key, v.value().clone()));
                 }
+                if self.sort {
+                    data.sort_by(|a, b| a.0.cmp(&b.0));
+                }
+                let ret = data
+                    .into_iter()
+                    .flat_map(|(k, v)| vec![BulkString::from(k).into(), v])
+                    .collect::<Vec<RespFrame>>();
+                
                 RespArray::new(ret).into()
             }
             None => RespArray::new([]).into(),
@@ -61,6 +68,7 @@ impl TryFrom<RespArray> for HGetAllCommand {
         match args.next() {
             Some(RespFrame::BulkString(key)) => Ok(HGetAllCommand {
                 key: String::from_utf8(key.0)?,
+                sort: false,
             }),
             _ => Err(CommandError::InvalidArgument("Invalid key".to_string())),
         }
@@ -98,7 +106,7 @@ impl TryFrom<RespArray> for HSetCommand {
 
 #[cfg(test)]
 mod tests {
-    use crate::{RespDecode, RespMap};
+    use crate::RespDecode;
 
     use super::*;
     use anyhow::Result;
@@ -173,14 +181,16 @@ mod tests {
 
         let cmd = HGetAllCommand {
             key: "map".to_string(),
+            sort: true,
         };
         let result = cmd.execute(&backend);
-        let mut expected = RespMap::new();
-        expected.insert("hello".to_string(), RespFrame::BulkString(b"world".into()));
-        expected.insert(
-            "hello1".to_string(),
-            RespFrame::BulkString(b"world1".into()),
-        );
+
+        let expected = RespArray::new([
+            BulkString::from("hello").into(),
+            BulkString::from("world").into(),
+            BulkString::from("hello1").into(),
+            BulkString::from("world1").into(),
+        ]);
         assert_eq!(result, expected.into());
         Ok(())
     }
