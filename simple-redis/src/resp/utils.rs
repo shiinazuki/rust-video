@@ -2,7 +2,6 @@ use bytes::{Buf, BytesMut};
 
 use super::{RespDecode, RespError, RespFrame, SimpleString, CRLF_LEN};
 
-
 pub fn extract_simple_frame_data(buf: &[u8], prefix: &str) -> Result<usize, RespError> {
     if buf.len() < 3 {
         return Err(RespError::NotComplete);
@@ -59,7 +58,12 @@ pub fn parse_length(buf: &[u8], prefix: &str) -> Result<(usize, usize), RespErro
     Ok((end, s.parse()?))
 }
 
-pub fn calc_total_length(buf: &[u8], end: usize, len: usize, prefix: &str) -> Result<usize, RespError> {
+pub fn calc_total_length(
+    buf: &[u8],
+    end: usize,
+    len: usize,
+    prefix: &str,
+) -> Result<usize, RespError> {
     let mut total = end + CRLF_LEN;
     let mut data = &buf[total..];
     match prefix {
@@ -95,7 +99,6 @@ mod tests {
 
     #[test]
     fn test_calc_array_length() -> Result<()> {
-        let a = 1;
         let buf = b"*2\r\n$3\r\nset\r\n$5\r\nhello\r\n";
         let (end, len) = parse_length(buf, "*")?;
         let total_len = calc_total_length(buf, end, len, "*")?;
