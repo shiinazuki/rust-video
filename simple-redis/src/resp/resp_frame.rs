@@ -1,25 +1,19 @@
 use bytes::BytesMut;
 use enum_dispatch::enum_dispatch;
-use std::collections::BTreeMap;
-use std::ops::{Deref, DerefMut};
 
-#[enum_dispatch]
-pub trait RespEncode {
-    fn encode(self) -> Vec<u8>;
-}
-
-pub trait RespDecode {
-    fn decode(buf: Self) -> anyhow::Result<RespFrame, String>;
-}
-
-impl RespDecode for BytesMut {
-    fn decode(_buf: Self) -> anyhow::Result<RespFrame, String> {
-        Ok(RespFrame::Boolean(false))
-    }
-}
+use super::{
+    array::{RespArray, RespNullArray},
+    bulk_string::{BulkString, RespNullBulkString},
+    map::RespMap,
+    null::RespNull,
+    set::RespSet,
+    simple_error::SimpleError,
+    simple_string::SimpleString,
+    RespDecode, RespEncode, RespError,
+};
 
 #[enum_dispatch(RespEncode)]
-#[derive(Debug, PartialOrd, PartialEq)]
+#[derive(Debug, Clone, PartialOrd, PartialEq)]
 pub enum RespFrame {
     Integer(i64),
     SimpleString(SimpleString),
@@ -35,119 +29,107 @@ pub enum RespFrame {
     Set(RespSet),
 }
 
-#[derive(Debug, PartialOrd, PartialEq)]
-pub struct SimpleString(pub String);
+impl RespDecode for RespFrame {
+    const PREFIX: &'static str = "";
+    fn decode(buf: &mut BytesMut) -> Result<Self, RespError> {
+        let mut iter = buf.iter().peekable();
+        match iter.peek() {
+            Some(b'+') => {
+                let frame = SimpleString::decode(buf)?;
+                Ok(frame.into())
+            }
+            Some(b'-') => {
+                let frame = SimpleError::decode(buf)?;
+                Ok(frame.into())
+            }
+            Some(b':') => {
+                let frame = i64::decode(buf)?;
+                Ok(frame.into())
+            }
+            Some(b'$') => match RespNullBulkString::decode(buf) {
+                Ok(frame) => Ok(frame.into()),
+                Err(RespError::NotComplete) => Err(RespError::NotComplete),
+                Err(_) => {
+                    let frame = BulkString::decode(buf)?;
+                    Ok(frame.into())
+                }
+            },
+            Some(b'*') => match RespNullArray::decode(buf) {
+                Ok(frame) => Ok(frame.into()),
+                Err(RespError::NotComplete) => Err(RespError::NotComplete),
+                Err(_) => {
+                    let frame = RespArray::decode(buf)?;
+                    Ok(frame.into())
+                }
+            },
+            Some(b'_') => {
+                let frame = RespNull::decode(buf)?;
+                Ok(frame.into())
+            }
+            Some(b'#') => {
+                let frame = bool::decode(buf)?;
+                Ok(frame.into())
+            }
+            Some(b',') => {
+                let frame = f64::decode(buf)?;
+                Ok(frame.into())
+            }
+            Some(b'%') => {
+                let frame = RespMap::decode(buf)?;
+                Ok(frame.into())
+            }
+            Some(b'~') => {
+                let frame = RespSet::decode(buf)?;
+                Ok(frame.into())
+            }
 
-impl SimpleString {
-    pub fn new(s: impl Into<String>) -> Self {
-        SimpleString(s.into())
+            None => Err(RespError::NotComplete),
+
+            _ => Err(RespError::InvalidFrameType(format!(
+                "expect_length: unknown frame type: {:?}",
+                buf
+            ))),
+        }
+    }
+
+    fn expect_length(buf: &[u8]) -> Result<usize, RespError> {
+        let mut iter = buf.iter().peekable();
+        match iter.peek() {
+            Some(b'*') => RespArray::expect_length(buf),
+            Some(b'~') => RespSet::expect_length(buf),
+            Some(b'%') => RespMap::expect_length(buf),
+            Some(b'$') => BulkString::expect_length(buf),
+            Some(b':') => i64::expect_length(buf),
+            Some(b'+') => SimpleString::expect_length(buf),
+            Some(b'-') => SimpleError::expect_length(buf),
+            Some(b'#') => bool::expect_length(buf),
+            Some(b',') => f64::expect_length(buf),
+            Some(b'_') => RespNull::expect_length(buf),
+            _ => Err(RespError::NotComplete),
+        }
     }
 }
 
-impl Deref for SimpleString {
-    type Target = String;
-    fn deref(&self) -> &Self::Target {
-        &self.0
+impl From<&str> for RespFrame {
+    fn from(value: &str) -> Self {
+        SimpleString(value.to_string()).into()
     }
 }
 
-#[derive(Debug, PartialOrd, PartialEq)]
-pub struct SimpleError(pub String);
-
-impl SimpleError {
-    pub fn new(s: impl Into<String>) -> Self {
-        SimpleError(s.into())
+impl From<&[u8]> for RespFrame {
+    fn from(value: &[u8]) -> Self {
+        BulkString(value.to_vec()).into()
     }
 }
 
-impl Deref for SimpleError {
-    type Target = String;
-    fn deref(&self) -> &Self::Target {
-        &self.0
+impl<const N: usize> From<&[u8; N]> for RespFrame {
+    fn from(value: &[u8; N]) -> Self {
+        BulkString(value.to_vec()).into()
     }
 }
 
-#[derive(Debug, PartialOrd, PartialEq)]
-pub struct BulkString(pub Vec<u8>);
-
-impl BulkString {
-    pub fn new(s: impl Into<Vec<u8>>) -> Self {
-        BulkString(s.into())
-    }
-}
-
-impl Deref for BulkString {
-    type Target = Vec<u8>;
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
-
-#[derive(Debug, PartialOrd, PartialEq)]
-pub struct RespNull;
-
-#[derive(Debug, PartialOrd, PartialEq)]
-pub struct RespArray(pub Vec<RespFrame>);
-
-impl RespArray {
-    pub fn new(s: impl Into<Vec<RespFrame>>) -> Self {
-        RespArray(s.into())
-    }
-}
-
-impl Deref for RespArray {
-    type Target = Vec<RespFrame>;
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
-
-#[derive(Debug, PartialOrd, PartialEq)]
-pub struct RespNullArray;
-
-#[derive(Debug, PartialOrd, PartialEq)]
-pub struct RespNullBulkString;
-
-#[derive(Debug, PartialOrd, PartialEq)]
-pub struct RespMap(pub BTreeMap<String, RespFrame>);
-
-impl RespMap {
-    pub fn new() -> Self {
-        RespMap(BTreeMap::new())
-    }
-}
-
-impl Default for RespMap {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
-impl Deref for RespMap {
-    type Target = BTreeMap<String, RespFrame>;
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
-
-impl DerefMut for RespMap {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.0
-    }
-}
-
-#[derive(Debug, PartialOrd, PartialEq)]
-pub struct RespSet(pub Vec<RespFrame>);
-
-impl RespSet {
-    pub fn new(s: impl Into<Vec<RespFrame>>) -> Self {
-        RespSet(s.into())
-    }
-}
-
-impl Deref for RespSet {
-    type Target = Vec<RespFrame>;
-    fn deref(&self) -> &Self::Target {
-        &self.0
+impl RespEncode for () {
+    fn encode(self) -> Vec<u8> {
+        b"$-1\r\n".to_vec()
     }
 }
