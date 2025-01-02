@@ -1,8 +1,8 @@
 use crate::cmd::{
-    extract_args, validate_command, CommandError, CommandExecutor, HGetAllCommand,
-    HGetCommand, HSetCommand, RESP_OK,
+    extract_args, validate_command, CommandError, CommandExecutor, HGetAllCommand, HGetCommand,
+    HSetCommand, RESP_OK,
 };
-use crate::{Backend, RespArray, RespFrame, RespMap, RespNull};
+use crate::{Backend, BulkString, RespArray, RespFrame, RespNull};
 
 impl CommandExecutor for HGetCommand {
     fn execute(self, backend: &Backend) -> RespFrame {
@@ -38,12 +38,13 @@ impl CommandExecutor for HGetAllCommand {
 
         match hmap {
             Some(hmap) => {
-                let mut map = RespMap::new();
+                let mut ret = Vec::with_capacity(hmap.len() * 2);
                 for v in hmap.iter() {
                     let key = v.key().to_owned();
-                    map.insert(key, v.value().clone());
+                    ret.push(BulkString::new(key).into());
+                    ret.push(v.value().clone());
                 }
-                map.into()
+                RespArray::new(ret).into()
             }
             None => RespArray::new([]).into(),
         }
@@ -155,21 +156,21 @@ mod tests {
         };
         let result = cmd.execute(&backend);
         assert_eq!(result, RESP_OK.clone());
-    
+
         let cmd = HSetCommand {
             key: "map".to_string(),
             field: "hello1".to_string(),
             value: RespFrame::BulkString(b"world1".into()),
         };
         cmd.execute(&backend);
-    
+
         let cmd = HGetCommand {
             key: "map".to_string(),
             field: "hello".to_string(),
         };
         let result = cmd.execute(&backend);
         assert_eq!(result, RespFrame::BulkString(b"world".into()));
-    
+
         let cmd = HGetAllCommand {
             key: "map".to_string(),
         };
