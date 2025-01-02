@@ -1,0 +1,13 @@
+[package]
+name = "concurrency"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1.0.95"
+rand = "0.8.5"
+oneshot = "0.1.8"
+dashmap = "6.1.0"
+tokio = { version = "1.42.0", features = ["rt", "rt-multi-thread", "macros", "net", "io-util"] }
+tracing = "0.1.41"
+tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }

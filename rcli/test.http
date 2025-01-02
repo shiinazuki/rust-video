@@ -1,0 +1,5 @@
+### test index
+GET http://127.0.0.1:8331/blake3.txt
+
+### test static file with tower-http
+GET http://127.0.0.1:8331/tower/process/1.mp4
