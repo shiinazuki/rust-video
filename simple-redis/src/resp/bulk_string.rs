@@ -2,7 +2,10 @@ use std::ops::Deref;
 
 use bytes::{Buf, BytesMut};
 
-use super::{utils::{extract_fixed_data, parse_length}, RespDecode, RespEncode, RespError, CRLF_LEN};
+use super::{
+    utils::{extract_fixed_data, parse_length},
+    RespDecode, RespEncode, RespError, CRLF_LEN,
+};
 
 #[derive(Debug, Clone, PartialOrd, PartialEq)]
 pub struct RespNullBulkString;

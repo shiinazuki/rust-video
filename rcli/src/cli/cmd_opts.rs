@@ -26,7 +26,7 @@ pub enum SubCommand {
 
     #[command(subcommand, about = "HTTP server")]
     Http(HttpSubCommand),
-    
+
     #[command(subcommand, about = "Jwt sign/verify")]
     Jwt(JwtSubCommand),
 }

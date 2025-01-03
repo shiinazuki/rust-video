@@ -1,5 +1,5 @@
 mod command;
-mod map;
 mod hmap;
+mod map;
 
 pub use command::*;

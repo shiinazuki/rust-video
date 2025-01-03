@@ -1,8 +1,8 @@
 use crate::cli::Base64Format;
+use crate::get_reader;
 use base64::engine::general_purpose;
 use base64::Engine;
 use std::io::Read;
-use crate::get_reader;
 
 pub fn process_encode_base64(input: &str, format: Base64Format) -> anyhow::Result<String> {
     let mut reader = get_reader(input)?;
@@ -17,7 +17,7 @@ pub fn process_encode_base64(input: &str, format: Base64Format) -> anyhow::Resul
     Ok(encoded)
 }
 
-pub fn process_decode_base64(input: &str, format: Base64Format) -> anyhow::Result<Vec<u8>>{
+pub fn process_decode_base64(input: &str, format: Base64Format) -> anyhow::Result<Vec<u8>> {
     let mut reader = get_reader(input)?;
 
     let mut buf = String::new();
@@ -28,18 +28,16 @@ pub fn process_decode_base64(input: &str, format: Base64Format) -> anyhow::Resul
         Base64Format::Standard => general_purpose::STANDARD.decode(buf)?,
         Base64Format::UrlSafe => general_purpose::URL_SAFE_NO_PAD.decode(buf)?,
     };
-    
+
     Ok(decoded)
 }
-
-
 
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
-    fn test_process_encode()  {
+    fn test_process_encode() {
         let input = "D:\\soft\\rust\\project\\items\\rust-video\\rcli\\Cargo.toml";
         let format = Base64Format::Standard;
         assert!(process_encode_base64(input, format).is_ok());

@@ -1,6 +1,6 @@
 use bytes::BytesMut;
 
-use super::{  utils::extract_fixed_data, RespDecode, RespEncode, RespError};
+use super::{utils::extract_fixed_data, RespDecode, RespEncode, RespError};
 
 impl RespEncode for bool {
     fn encode(self) -> Vec<u8> {
@@ -33,7 +33,7 @@ mod tests {
     use crate::RespFrame;
     use anyhow::Result;
     use bytes::BufMut;
-    
+
     #[test]
     fn test_boolean_encode() {
         let frame: RespFrame = true.into();

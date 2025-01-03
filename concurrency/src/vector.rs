@@ -1,5 +1,5 @@
-use std::ops::{Add, AddAssign, Deref, Mul};
 use anyhow::anyhow;
+use std::ops::{Add, AddAssign, Deref, Mul};
 
 pub struct Vector<T> {
     data: Vec<T>,

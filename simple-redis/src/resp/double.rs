@@ -1,6 +1,6 @@
 use bytes::BytesMut;
 
-use super::{ utils::extract_simple_frame_data, RespDecode, RespEncode, RespError, CRLF_LEN};
+use super::{utils::extract_simple_frame_data, RespDecode, RespEncode, RespError, CRLF_LEN};
 
 impl RespEncode for f64 {
     fn encode(self) -> Vec<u8> {
