@@ -14,7 +14,7 @@ struct Message {
 }
 
 impl Message {
-    fn new(index: usize, value: usize) -> Self {
+    fn _new(index: usize, value: usize) -> Self {
         Message { index, value }
     }
 }
