@@ -3,6 +3,9 @@ name = "macros"
 version = "0.1.0"
 edition = "2021"
 
+[lib]
+proc-macro = true
+
 [dependencies]
 anyhow = "1.0.95"
 futures = "0.3.31"
