@@ -49,4 +49,3 @@ pub(crate) fn process_auto_debug(input: DeriveInput) -> TokenStream {
         }
     }
 }
-
