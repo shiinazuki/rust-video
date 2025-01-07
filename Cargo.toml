@@ -1,3 +1,14 @@
 [workspace]
-members = ["concurrency", "macros", "rcli", "simple-redis"]
+members = [
+    "concurrency",
+    "error-code",
+    "error-code-derive",
+    "macros",
+    "rcli",
+    "simple-redis",
+]
 resolver = "2"
+
+[workspace.dependencies]
+error-code = { path = "../error-code" }
+error-code-derive = { path = "../error-code-derive" }
