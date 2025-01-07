@@ -50,7 +50,7 @@ impl CommandExecutor for HGetAllCommand {
                     .into_iter()
                     .flat_map(|(k, v)| vec![BulkString::from(k).into(), v])
                     .collect::<Vec<RespFrame>>();
-                
+
                 RespArray::new(ret).into()
             }
             None => RespArray::new([]).into(),

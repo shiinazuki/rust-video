@@ -14,8 +14,6 @@ struct EnumFromDarling {
     data: Data<EnumVariants, ()>,
 }
 
-
-
 #[derive(Debug, FromVariant)]
 struct EnumVariants {
     ident: syn::Ident,

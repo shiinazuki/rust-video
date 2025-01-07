@@ -1,4 +1,3 @@
-
 use anyhow::{anyhow, Result};
 
 fn main() -> Result<()> {
@@ -29,4 +28,3 @@ macro_rules! my_try {
         }
     };
 }
-

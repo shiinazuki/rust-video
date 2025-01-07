@@ -41,4 +41,3 @@ pub(crate) fn process_enum_from(input: DeriveInput) -> TokenStream {
         #(#from_impls)*
     }
 }
-
