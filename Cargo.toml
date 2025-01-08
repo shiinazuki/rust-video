@@ -1,6 +1,6 @@
 [workspace]
 members = [
-    "concurrency",
+    "concurrency", "ecos-system",
     "error-code",
     "error-code-derive",
     "macros",
