@@ -52,13 +52,13 @@ pub(crate) fn process_error_info(input: DeriveInput) -> TokenStream {
             } = variant;
             let code = format!("{}{}", prefix, code);
             let varint_code = match fields.style {
-                Style::Tuple => quote!{ #name::#ident (_) },
                 Style::Struct => quote! { #name::#ident { .. } },
-                Style::Unit => quote!{ #name::#ident },
+                Style::Tuple => quote! { #name::#ident(_) },
+                Style::Unit => quote! { #name::#ident },
             };
 
             quote! {
-               #varint_code => {
+                #varint_code => {
                     ErrorInfo::new(
                         #app_code,
                         #code,

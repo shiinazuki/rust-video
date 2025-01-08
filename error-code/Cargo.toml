@@ -4,12 +4,16 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+error-code-derive = { workspace = true }
+base64 = "0.22.1"
+
+[dev-dependencies]
 thiserror = "2.0.9"
 http = "1.2.0"
-base64 = "0.22.1"
 axum = { version = "0.8.1", features = ["http2", "query", "tracing"] }
 backtrace = "0.3.74"
 tokio = { version = "1.42.0", features = ["rt", "rt-multi-thread", "macros"] }
 tracing = "0.1.41"
 tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
-error-code-derive = { workspace = true }
+anyhow = "1.0.95"
+error-code = { workspace = true }

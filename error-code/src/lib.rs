@@ -1,11 +1,16 @@
 use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine};
+pub use error_code_derive::ToErrorInfo;
 use std::{
     fmt,
     hash::{DefaultHasher, Hash, Hasher},
     str::FromStr,
 };
 
-pub use error_code_derive::ToErrorInfo;
+
+pub trait ToErrorInfo {
+    type T: FromStr;
+    fn to_error_info(&self) -> ErrorInfo<Self::T>;
+}
 
 pub struct ErrorInfo<T> {
     pub app_code: T,
@@ -43,10 +48,10 @@ where
 
 impl<T> ErrorInfo<T> {
     pub fn client_msg(&self) -> &str {
-        if self.client_msg().is_empty() {
+        if self.client_msg.is_empty() {
             &self.server_msg
         } else {
-            self.client_msg()
+            self.client_msg
         }
     }
 }
@@ -63,7 +68,3 @@ impl<T> fmt::Debug for ErrorInfo<T> {
     }
 }
 
-pub trait ToErrorInfo {
-    type T: FromStr;
-    fn to_error_info(&self) -> ErrorInfo<Self::T>;
-}
