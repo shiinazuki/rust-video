@@ -1,10 +1,12 @@
 use std::time::Duration;
 
 use axum::{
+    extract::Request,
     response::{IntoResponse, Response},
     routing::get,
     Router,
 };
+
 use tokio::{
     net::TcpListener,
     time::{sleep, Instant},
@@ -48,8 +50,8 @@ async fn main() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[instrument]
-async fn index_handler() -> Response {
+#[instrument(fields(http.uri = req.uri().path(), http.method = req.method().as_str()))]
+async fn index_handler(req: Request) -> Response {
     debug!("index handler started");
     sleep(Duration::from_millis(11)).await;
     let ret = long_task().await;

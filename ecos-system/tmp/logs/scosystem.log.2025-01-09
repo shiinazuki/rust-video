@@ -127,3 +127,15 @@
     [2;3mat[0m ecos-system\examples\axum_tracing.rs:52
     [2;3min[0m axum_tracing::[1mindex_handler[0m
 
+  [2m2025-01-09T07:57:23.949929Z[0m [32m INFO[0m [1;32maxum_tracing[0m[32m: [32mStarting server on 0.0.0.0:8012[0m
+    [2;3mat[0m ecos-system\examples\axum_tracing.rs:43
+
+  [2m2025-01-09T07:58:14.657611Z[0m [33m WARN[0m [1;33maxum_tracing[0m[33m: [33mtask takes too long, [1;33mapp.task_duration[0m[33m: 113[0m
+    [2;3mat[0m ecos-system\examples\axum_tracing.rs:64
+    [2;3min[0m axum_tracing::[1mlong_task[0m
+    [2;3min[0m axum_tracing::[1mindex_handler[0m [2;3mwith[0m [1mreq[0m: Request { method: GET, uri: /, version: HTTP/1.1, headers: {"host": "127.0.0.1:8012", "connection": "keep-alive", "cache-control": "max-age=0", "sec-ch-ua": "\"Google Chrome\";v=\"131\", \"Chromium\";v=\"131\", \"Not_A Brand\";v=\"24\"", "sec-ch-ua-mobile": "?0", "sec-ch-ua-platform": "\"Windows\"", "upgrade-insecure-requests": "1", "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36", "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7", "sec-fetch-site": "none", "sec-fetch-mode": "navigate", "sec-fetch-user": "?1", "sec-fetch-dest": "document", "accept-encoding": "gzip, deflate, br, zstd", "accept-language": "zh-CN,zh;q=0.9"}, body: Body(UnsyncBoxBody) }, [1mhttp.uri[0m: "/", [1mhttp.method[0m: "GET"
+
+  [2m2025-01-09T07:58:14.661030Z[0m [32m INFO[0m [1;32maxum_tracing[0m[32m: [32mindex handler complteed, [1;32mhttp.status[0m[32m: 200[0m
+    [2;3mat[0m ecos-system\examples\axum_tracing.rs:55
+    [2;3min[0m axum_tracing::[1mindex_handler[0m [2;3mwith[0m [1mreq[0m: Request { method: GET, uri: /, version: HTTP/1.1, headers: {"host": "127.0.0.1:8012", "connection": "keep-alive", "cache-control": "max-age=0", "sec-ch-ua": "\"Google Chrome\";v=\"131\", \"Chromium\";v=\"131\", \"Not_A Brand\";v=\"24\"", "sec-ch-ua-mobile": "?0", "sec-ch-ua-platform": "\"Windows\"", "upgrade-insecure-requests": "1", "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36", "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7", "sec-fetch-site": "none", "sec-fetch-mode": "navigate", "sec-fetch-user": "?1", "sec-fetch-dest": "document", "accept-encoding": "gzip, deflate, br, zstd", "accept-language": "zh-CN,zh;q=0.9"}, body: Body(UnsyncBoxBody) }, [1mhttp.uri[0m: "/", [1mhttp.method[0m: "GET"
+
