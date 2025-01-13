@@ -8,11 +8,11 @@ error-code-derive = { workspace = true }
 base64 = "0.22.1"
 
 [dev-dependencies]
-thiserror = "2.0.9"
+thiserror = "2.0.11"
 http = "1.2.0"
 axum = { version = "0.8.1", features = ["http2", "query", "tracing"] }
 backtrace = "0.3.74"
-tokio = { version = "1.42.0", features = ["rt", "rt-multi-thread", "macros"] }
+tokio = { version = "1.43.0", features = ["rt", "rt-multi-thread", "macros"] }
 tracing = "0.1.41"
 tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
 anyhow = "1.0.95"
