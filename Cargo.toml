@@ -4,7 +4,7 @@ members = [ "chat",
     "ecos-system",
     "error-code",
     "error-code-derive",
-    "macros",
+    "macros", "notify-server",
     "rcli",
     "simple-redis",
 ]
