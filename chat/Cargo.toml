@@ -5,12 +5,14 @@ edition = "2021"
 
 [dependencies]
 anyhow = "1.0.95"
+argon2 = { version = "0.5.3", features = ["std"] }
 axum = { version = "0.8.1", features = ["http2", "multipart", "query", "tracing"] }
+chrono = { version = "0.4.39", features = ["serde"] }
 config = "0.15.6"
 secrecy = { version = "0.10.3", features = ["serde"] }
 serde = { version = "1.0.217", features = ["derive"] }
 serde_yaml = "0.9.34"
-sqlx = { version = "0.8.3", features = ["postgres", "runtime-tokio-rustls"] }
+sqlx = { version = "0.8.3", features = ["chrono", "postgres", "runtime-tokio", "runtime-tokio-rustls", "tls-rustls"] }
 thiserror = "2.0.11"
 tokio = { version = "1.43.0", features = ["rt", "rt-multi-thread", "macros"] }
 tracing = "0.1.41"

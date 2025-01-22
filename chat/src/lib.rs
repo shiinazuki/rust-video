@@ -1,8 +1,12 @@
 mod configuration;
+mod models;
 mod handlers;
+mod error;
 
-pub use configuration::{get_configuration, AppConfig};
 use handlers::*;
+pub use configuration::{get_configuration, AppConfig};
+pub use models::User;
+pub use error::AppError;
 
 use axum::{
     routing::{get, patch, post},
