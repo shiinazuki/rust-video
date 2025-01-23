@@ -7,3 +7,12 @@ database:
   username: "username"
   password: "********"
   database_name: "dbname"
+
+auth:
+  sk: |
+    -----BEGIN PRIVATE KEY-----
+    -----END PRIVATE KEY-----
+
+  pk: |
+    -----BEGIN PUBLIC KEY-----
+    -----END PUBLIC KEY-----

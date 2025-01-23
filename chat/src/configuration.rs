@@ -1,4 +1,3 @@
-use anyhow::Result;
 use config::Config;
 use secrecy::{ExposeSecret, SecretBox};
 use serde::Deserialize;
@@ -7,6 +6,7 @@ use serde::Deserialize;
 pub struct AppConfig {
     pub application: ApplicationConfig,
     pub database: DatabaseConfig,
+    pub auth: AuthConfig,
 }
 
 impl AppConfig {}
@@ -41,7 +41,28 @@ impl DatabaseConfig {
     }
 }
 
+#[derive(Debug, Deserialize)]
+pub struct AuthConfig {
+    pub sk: SecretBox<String>,
+    pub pk: SecretBox<String>,
+}
+
 pub fn get_configuration() -> Result<AppConfig, config::ConfigError> {
+    let base_path = std::env::current_dir().expect("Failed to determine the current directory");
+    let configuration_directory = base_path.join("chat").join("configuration");
+    let env_filename = std::env::var("APP_ENVIRONMENT").unwrap_or_else(|_| "local".into());
+    let configuration_directory = configuration_directory.join(env_filename);
+
+    let configs = Config::builder()
+        .add_source(config::File::with_name(
+            configuration_directory.to_str().unwrap_or_else(|| "/etc"),
+        ))
+        .build()?;
+    Ok(configs.try_deserialize::<AppConfig>()?)
+}
+
+#[cfg(test)]
+pub fn get_configuration_test() -> Result<AppConfig, config::ConfigError> {
     let base_path = std::env::current_dir().expect("Failed to determine the current directory");
     let configuration_directory = base_path.join("configuration");
     let env_filename = std::env::var("APP_ENVIRONMENT").unwrap_or_else(|_| "local".into());

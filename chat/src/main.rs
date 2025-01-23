@@ -12,13 +12,14 @@ async fn main() -> Result<()> {
 
     tracing_subscriber::registry().with(console).init();
 
+    info!("{:#?}", config);
     let addr = format!("{}:{}", config.application.host, config.application.port);
 
     let listener = TcpListener::bind(&addr).await?;
 
     info!("Listening on: {}", addr);
 
-    let app = get_router(config);
+    let app = get_router(config).await?;
 
     axum::serve(listener, app.into_make_service()).await?;
 

@@ -4,6 +4,7 @@ use argon2::{
     password_hash::{rand_core::OsRng, PasswordHasher, SaltString},
     Argon2, PasswordHash, PasswordVerifier,
 };
+use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
 
 use crate::{AppError, User};
@@ -23,13 +24,12 @@ impl User {
         Ok(user)
     }
 
-    pub async fn create(
-        email: &str,
-        fullname: &str,
-        password: &str,
-        pool: &PgPool,
-    ) -> Result<Self, AppError> {
-        let password_hash = hash_password(password)?;
+    pub async fn create(create_user: &CreateUser, pool: &PgPool) -> Result<Self, AppError> {
+        let password_hash = hash_password(&create_user.password)?;
+        let user = Self::find_by_email(&create_user.email, &pool).await?;
+        if user.is_some() {
+            return Err(AppError::EmailAlreadyExists(create_user.email.clone()));
+        }
         let user = sqlx::query_as(
             r#"
                 INSERT INTO users ( email, fullname, password_hash)
@@ -37,8 +37,8 @@ impl User {
                 RETURNING id, fullname, email, created_at
             "#,
         )
-        .bind(email)
-        .bind(fullname)
+        .bind(&create_user.email)
+        .bind(&create_user.fullname)
         .bind(password_hash)
         .fetch_one(pool)
         .await?;
@@ -46,24 +46,21 @@ impl User {
         Ok(user)
     }
 
-    pub async fn verify(
-        email: &str,
-        password: &str,
-        pool: &PgPool,
-    ) -> Result<Option<Self>, AppError> {
+    pub async fn verify(signin_user: &SigninUser, pool: &PgPool) -> Result<Option<Self>, AppError> {
         let user: Option<User> = sqlx::query_as(
             r#"
              SELECT * FROM users WHERE email = $1
             "#,
         )
-        .bind(email)
+        .bind(&signin_user.email)
         .fetch_optional(pool)
         .await?;
 
         match user {
             Some(mut user) => {
                 let password_hash = mem::take(&mut user.password_hash);
-                let is_valid = verify_passwor(password, &password_hash.unwrap_or_default())?;
+                let is_valid =
+                    verify_passwor(&signin_user.password, &password_hash.unwrap_or_default())?;
                 if is_valid {
                     Ok(Some(user))
                 } else {
@@ -96,14 +93,62 @@ fn verify_passwor(password: &str, password_hash: &str) -> Result<bool, AppError>
     Ok(is_valid)
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CreateUser {
+    pub fullname: String,
+    pub email: String,
+    pub password: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SigninUser {
+    pub email: String,
+    pub password: String,
+}
+
+#[cfg(test)]
+impl User {
+    pub fn new(id: i64, fullname: &str, email: &str) -> Self {
+        Self {
+            id,
+            fullname: fullname.to_string(),
+            email: email.to_string(),
+            password_hash: None,
+            created_at: chrono::Utc::now(),
+        }
+    }
+}
+
+#[cfg(test)]
+impl CreateUser {
+    pub fn new(fullname: &str, email: &str, password: &str) -> Self {
+        Self {
+            fullname: fullname.to_string(),
+            email: email.to_string(),
+            password: password.to_string(),
+        }
+    }
+}
+
+#[cfg(test)]
+impl SigninUser {
+    pub fn new(email: &str, password: &str) -> Self {
+        Self {
+            email: email.to_string(),
+            password: password.to_string(),
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
-    use crate::get_configuration;
+
+    use crate::configuration::get_configuration_test;
 
     use super::*;
     use anyhow::Result;
     use secrecy::ExposeSecret;
-    
+
     #[test]
     fn hash_password_and_verify_should_work() -> Result<()> {
         let password = "hunted";
@@ -114,29 +159,44 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn create_duplicate_user_should_fail() -> Result<()> {
+        let config = get_configuration_test()?;
+        let pool = PgPool::connect(config.database.connection_string().expose_secret()).await?;
+        let create_user = CreateUser::new("shiina", "1@xxx.org", "hunted");
+        User::create(&create_user, &pool).await?;
+        let ret = User::create(&create_user, &pool).await;
+        match ret {
+            Err(AppError::EmailAlreadyExists(email)) => {
+                assert_eq!(email, create_user.email);
+            }
+            _ => panic!("Expecting EmailAlreadyExists error"),
+        }
+
+        Ok(())
+    }
+
+    #[tokio::test]
     async fn create_and_verify_user_should_work() -> Result<()> {
-        let config = get_configuration()?;
+        let config = get_configuration_test()?;
         let pool = PgPool::connect(config.database.connection_string().expose_secret()).await?;
 
-        let email = "1@xxx.org";
-        let name = "shiina";
-        let password = "hunted";
+        let create_user = CreateUser::new("shiina", "1@xxx.org", "hunted");
 
-        let user = User::create(email, name, password, &pool).await?;
-        assert_eq!(user.email, email);
-        assert_eq!(user.fullname, name);
+        let user = User::create(&create_user, &pool).await?;
+        assert_eq!(user.email, create_user.email);
+        assert_eq!(user.fullname, create_user.fullname);
         assert!(user.id > 0);
-        
-        let user = User::find_by_email(email, &pool).await?;
+
+        let user = User::find_by_email(&create_user.email, &pool).await?;
         assert!(user.is_some());
         let user = user.unwrap();
-        assert_eq!(user.email, email);
-        assert_eq!(user.fullname, name);
-        
-        let user = User::verify(email, password, &pool).await?;
+        assert_eq!(user.email, create_user.email);
+        assert_eq!(user.fullname, create_user.fullname);
+
+        let signin_user = SigninUser::new("1@xxx.org", "hunted");
+        let user = User::verify(&signin_user, &pool).await?;
         assert!(user.is_some());
-        
-        
+
         Ok(())
     }
 }

@@ -1,18 +1,22 @@
 mod configuration;
-mod models;
-mod handlers;
 mod error;
+mod handlers;
+mod models;
+mod utils;
 
-use handlers::*;
 pub use configuration::{get_configuration, AppConfig};
+pub use error::{AppError, ErrorOutput};
+use handlers::*;
 pub use models::User;
-pub use error::AppError;
 
 use axum::{
     routing::{get, patch, post},
     Router,
 };
-use std::{ops::Deref, sync::Arc};
+use secrecy::ExposeSecret;
+use sqlx::PgPool;
+use std::{fmt, ops::Deref, sync::Arc};
+use utils::{ChatDecodingKey, ChatEncodingKey};
 
 #[derive(Debug, Clone)]
 pub(crate) struct AppState {
@@ -20,10 +24,18 @@ pub(crate) struct AppState {
 }
 
 impl AppState {
-    pub fn new(config: AppConfig) -> Self {
-        Self {
-            inner: Arc::new(AppStateInner { config }),
-        }
+    pub async fn try_new(config: AppConfig) -> Result<Self, AppError> {
+        let ek = ChatEncodingKey::load(&config.auth.sk.expose_secret())?;
+        let dk = ChatDecodingKey::load(&config.auth.pk.expose_secret())?;
+        let pool = PgPool::connect(&config.database.connection_string().expose_secret()).await?;
+        Ok(Self {
+            inner: Arc::new(AppStateInner {
+                config,
+                ek,
+                dk,
+                pool,
+            }),
+        })
     }
 }
 
@@ -35,14 +47,23 @@ impl Deref for AppState {
     }
 }
 
-#[allow(unused)]
-#[derive(Debug)]
 pub(crate) struct AppStateInner {
     pub(crate) config: AppConfig,
+    pub(crate) dk: ChatDecodingKey,
+    pub(crate) ek: ChatEncodingKey,
+    pub(crate) pool: PgPool,
 }
 
-pub fn get_router(config: AppConfig) -> Router {
-    let state = AppState::new(config);
+impl fmt::Debug for AppStateInner {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("AppStateInner")
+            .field("config", &self.config)
+            .finish()
+    }
+}
+
+pub async fn get_router(config: AppConfig) -> Result<Router, AppError> {
+    let state = AppState::try_new(config).await?;
 
     let api = Router::new()
         .route("/signin", post(signin_handler))
@@ -62,8 +83,10 @@ pub fn get_router(config: AppConfig) -> Router {
         )
         .route("/chat/{id}/messages", get(list_message_handler));
 
-    Router::new()
+    let app = Router::new()
         .route("/", get(index_handler))
         .nest("/api", api)
-        .with_state(state)
+        .with_state(state);
+
+    Ok(app)
 }
