@@ -143,11 +143,14 @@ impl SigninUser {
 #[cfg(test)]
 mod tests {
 
+    use std::path::Path;
+
     use crate::configuration::get_configuration_test;
 
     use super::*;
     use anyhow::Result;
     use secrecy::ExposeSecret;
+    use sqlx_db_tester::TestPg;
 
     #[test]
     fn hash_password_and_verify_should_work() -> Result<()> {
@@ -161,7 +164,15 @@ mod tests {
     #[tokio::test]
     async fn create_duplicate_user_should_fail() -> Result<()> {
         let config = get_configuration_test()?;
-        let pool = PgPool::connect(config.database.connection_string().expose_secret()).await?;
+        let tdb = TestPg::new(
+            config
+                .database
+                .connection_string()
+                .expose_secret()
+                .to_string(),
+            Path::new("../migrations"),
+        );
+        let pool = tdb.get_pool().await;
         let create_user = CreateUser::new("shiina", "1@xxx.org", "hunted");
         User::create(&create_user, &pool).await?;
         let ret = User::create(&create_user, &pool).await;
@@ -178,7 +189,15 @@ mod tests {
     #[tokio::test]
     async fn create_and_verify_user_should_work() -> Result<()> {
         let config = get_configuration_test()?;
-        let pool = PgPool::connect(config.database.connection_string().expose_secret()).await?;
+        let tdb = TestPg::new(
+            config
+                .database
+                .connection_string()
+                .expose_secret()
+                .to_string(),
+            Path::new("../migrations"),
+        );
+        let pool = tdb.get_pool().await;
 
         let create_user = CreateUser::new("shiina", "1@xxx.org", "hunted");
 

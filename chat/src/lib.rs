@@ -14,7 +14,7 @@ use axum::{
     Router,
 };
 use secrecy::ExposeSecret;
-use sqlx::PgPool;
+use sqlx::{Connection, PgConnection, PgPool};
 use std::{fmt, ops::Deref, sync::Arc};
 use utils::{ChatDecodingKey, ChatEncodingKey};
 
@@ -36,6 +36,36 @@ impl AppState {
                 pool,
             }),
         })
+    }
+}
+
+#[cfg(test)]
+impl AppState {
+    pub async fn new_for_test(
+        config: AppConfig,
+    ) -> Result<(sqlx_db_tester::TestPg, Self), AppError> {
+        use sqlx_db_tester::TestPg;
+        let ek = ChatEncodingKey::load(&config.auth.sk.expose_secret())?;
+        let dk = ChatDecodingKey::load(&config.auth.pk.expose_secret())?;
+
+        let tdb = TestPg::new(
+            config
+                .database
+                .connection_string()
+                .expose_secret()
+                .to_owned(),
+            std::path::Path::new("../migrations"),
+        );
+        let pool = tdb.get_pool().await;
+        let state = Self {
+            inner: Arc::new(AppStateInner {
+                config,
+                ek,
+                dk,
+                pool,
+            }),
+        };
+        Ok((tdb, state))
     }
 }
 

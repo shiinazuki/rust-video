@@ -3,3 +3,5 @@
 /**/tmp
 /**/**/base.yaml
 *.env
+*.priv
+*.pub

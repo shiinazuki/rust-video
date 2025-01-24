@@ -51,7 +51,7 @@ mod tests {
     async fn signup_should_work() -> Result<()> {
         let config = get_configuration_test()?;
         let create_user = CreateUser::new("iori2", "abc@ma.org", "123456");
-        let state = AppState::try_new(config).await?;
+        let (_tdb, state) = AppState::new_for_test(config).await?;
         let ret = signup_handler(State(state), Json(create_user))
             .await?
             .into_response();
@@ -66,7 +66,7 @@ mod tests {
     async fn signup_duplicate_user_should_409() -> Result<()> {
         let config = get_configuration_test()?;
         let create_user = CreateUser::new("iori2", "abc@ma.org", "123456");
-        let state = AppState::try_new(config).await?;
+        let (_tdb, state) = AppState::new_for_test(config).await?;
         signup_handler(State(state.clone()), Json(create_user.clone())).await?;
         let ret = signup_handler(State(state), Json(create_user))
             .await
@@ -84,7 +84,7 @@ mod tests {
     #[tokio::test]
     async fn signin_should_work() -> Result<()> {
         let config = get_configuration_test()?;
-        let state = AppState::try_new(config).await?;
+        let (_tdb, state) = AppState::new_for_test(config).await?;
 
         let name = "iori";
         let email = "abc@d.org";
@@ -106,7 +106,7 @@ mod tests {
     #[tokio::test]
     async fn signin_with_non_exist_user_should_403() -> Result<()> {
         let config = get_configuration_test()?;
-        let state = AppState::try_new(config).await?;
+        let (_tdb, state) = AppState::new_for_test(config).await?;
 
         let email = "abc@d.org";
         let password = "123456";
