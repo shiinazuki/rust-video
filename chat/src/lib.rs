@@ -16,8 +16,8 @@ use axum::{
     routing::{get, patch, post},
     Router,
 };
-use r2d2::Pool;
-use redis::Client;
+// use r2d2::Pool;
+// use redis::Client;
 use secrecy::ExposeSecret;
 use sqlx::PgPool;
 use std::{fmt, ops::Deref, sync::Arc};
@@ -34,9 +34,9 @@ impl AppState {
         let dk = ChatDecodingKey::load(&config.auth.pk.expose_secret())?;
         let pool = PgPool::connect(&config.database.connection_string().expose_secret()).await?;
 
-        let redis_client =
-            redis::Client::open(config.redis.connection_url().expose_secret().as_ref())?;
-        let redis_pool = r2d2::Pool::builder().build(redis_client)?;
+        // let redis_client =
+        //     redis::Client::open(config.redis.connection_url().expose_secret().as_ref())?;
+        // let redis_pool = r2d2::Pool::builder().build(redis_client)?;
 
         Ok(Self {
             inner: Arc::new(AppStateInner {
@@ -44,7 +44,7 @@ impl AppState {
                 ek,
                 dk,
                 pool,
-                redis_pool,
+                // redis_pool,
             }),
         })
     }
@@ -69,10 +69,10 @@ impl AppState {
         );
         let pool = tdb.get_pool().await;
 
-        let redis_client =
-            redis::Client::open(config.redis.connection_url().expose_secret().as_ref())?;
+        // let redis_client =
+        //     redis::Client::open(config.redis.connection_url().expose_secret().as_ref())?;
 
-        let redis_pool = r2d2::Pool::builder().build(redis_client)?;
+        // let redis_pool = r2d2::Pool::builder().build(redis_client)?;
 
         let state = Self {
             inner: Arc::new(AppStateInner {
@@ -80,7 +80,7 @@ impl AppState {
                 ek,
                 dk,
                 pool,
-                redis_pool,
+                // redis_pool,
             }),
         };
         Ok((tdb, state))
@@ -100,7 +100,7 @@ pub(crate) struct AppStateInner {
     pub(crate) dk: ChatDecodingKey,
     pub(crate) ek: ChatEncodingKey,
     pub(crate) pool: PgPool,
-    pub(crate) redis_pool: Pool<Client>,
+    // pub(crate) redis_pool: Pool<Client>,
 }
 
 impl fmt::Debug for AppStateInner {

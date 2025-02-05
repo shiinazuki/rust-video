@@ -1,5 +1,5 @@
 use axum::{extract::State, http::StatusCode, response::IntoResponse, Json};
-use redis::Commands;
+// use redis::Commands;
 use serde::{Deserialize, Serialize};
 
 use crate::{
@@ -7,7 +7,7 @@ use crate::{
     AppError, AppState, ErrorOutput, User,
 };
 
-const REDIS_EX_TIME: u64 = 60 * 60 * 24 * 3;
+// const REDIS_EX_TIME: u64 = 60 * 60 * 24 * 3;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct AuthOutput {
@@ -20,13 +20,13 @@ pub(crate) async fn signup_handler(
 ) -> Result<impl IntoResponse, AppError> {
     let user = User::create(&create_user, &state.pool).await?;
 
-    let redis_key = user.id.clone();
+    // let redis_key = user.id.clone();
 
     let token = state.ek.sign(user)?;
 
     // 将token存储到缓存中
-    let mut conn = state.redis_pool.get()?;
-    let _: Result<(), redis::RedisError> = conn.set_ex(redis_key, token.clone(), REDIS_EX_TIME);
+    // let mut conn = state.redis_pool.get()?;
+    // let _: Result<(), redis::RedisError> = conn.set_ex(redis_key, token.clone(), REDIS_EX_TIME);
 
     let body = Json(AuthOutput { token });
     Ok((StatusCode::CREATED, body))
@@ -40,19 +40,20 @@ pub(crate) async fn signin_handler(
     match user {
         Some(user) => {
             // 查看缓存中有没有token  有直接拿缓存的token响应 没有则重新生成token 然后存储到缓存中
-            let redis_key = user.id.clone();
-            let mut conn = state.redis_pool.get()?;
-            let token: Result<String, redis::RedisError> = conn.get(redis_key);
-            let token = match token {
-                Ok(v) => v,
-                Err(_) => {
-                    let token = state.ek.sign(user)?;
-                    let _: Result<(), redis::RedisError> =
-                        conn.set_ex(redis_key, token.clone(), REDIS_EX_TIME);
-                    token
-                }
-            };
+            // let redis_key = user.id.clone();
+            // let mut conn = state.redis_pool.get()?;
+            // let token: Result<String, redis::RedisError> = conn.get(redis_key);
+            // let token = match token {
+            //     Ok(v) => v,
+            //     Err(_) => {
+            //         let token = state.ek.sign(user)?;
+            //         let _: Result<(), redis::RedisError> =
+            //             conn.set_ex(redis_key, token.clone(), REDIS_EX_TIME);
+            //         token
+            //     }
+            // };
 
+            let token = state.ek.sign(user)?;
             Ok((StatusCode::OK, Json(AuthOutput { token })).into_response())
         }
         None => {

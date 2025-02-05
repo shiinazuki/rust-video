@@ -40,7 +40,6 @@ Content-Type: application/json
 Authorization: Bearer {{token}}
 
 
-
 ###
 DELETE http://127.0.0.1:8002/api/chat
 Content-Type: application/json
