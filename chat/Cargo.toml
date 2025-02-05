@@ -12,6 +12,7 @@ axum = { version = "0.8.1", features = [
     "query",
     "tracing",
 ] }
+axum-extra = { version = "0.10.0", features = ["typed-header"] }
 chrono = { version = "0.4.39", features = ["serde"] }
 config = "0.15.6"
 hyper = { version = "1.5.2", features = ["full"] }
@@ -30,8 +31,11 @@ sqlx = { version = "0.8.3", features = [
 ] }
 thiserror = "2.0.11"
 tokio = { version = "1.43.0", features = ["rt", "rt-multi-thread", "macros"] }
+tower = "0.5.2"
+tower-http = { version = "0.6.2", features = ["compression-full", "trace"] }
 tracing = "0.1.41"
 tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
+uuid = { version = "1.13.0", features = ["v7", "serde"] }
 
 [dev-dependencies]
 http-body-util = "0.1.2"

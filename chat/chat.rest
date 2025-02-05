@@ -1,0 +1,50 @@
+###chat api test
+
+### signup user
+POST http://127.0.0.1:8002/api/signup
+Content-Type: application/json
+# x-request-id: dfasfds
+
+{
+    "fullname": "iori" ,
+    "email": "abd@ma.org",
+    "password": "123456"
+}
+
+### signin user
+# @name signin
+POST http://127.0.0.1:8002/api/signin
+Content-Type: application/json
+
+{
+    "email": "abd@ma.org",
+    "password": "123456"
+}
+
+@token = {{signin.response.body.token}}
+
+
+###
+GET http://127.0.0.1:8002/api/chat
+Authorization: Bearer {{token}}
+
+###
+POST http://127.0.0.1:8002/api/chat
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+
+###
+PATCH  http://127.0.0.1:8002/api/chat
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+
+
+###
+DELETE http://127.0.0.1:8002/api/chat
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+
+

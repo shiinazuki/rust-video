@@ -17,6 +17,7 @@ pub(crate) async fn signup_handler(
 ) -> Result<impl IntoResponse, AppError> {
     let user = User::create(&create_user, &state.pool).await?;
     let token = state.ek.sign(user)?;
+    // todo 这里应该将token存储到缓存中
     let body = Json(AuthOutput { token });
     Ok((StatusCode::CREATED, body))
 }
@@ -28,6 +29,7 @@ pub(crate) async fn signin_handler(
     let user = User::verify(&signin_user, &state.pool).await?;
     match user {
         Some(user) => {
+            // todo 首先查看缓存中有没有token  有直接拿缓存的token响应 没有则重新生成token 然后存储到缓存中
             let token = state.ek.sign(user)?;
             Ok((StatusCode::OK, Json(AuthOutput { token })).into_response())
         }
