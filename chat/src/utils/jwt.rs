@@ -4,7 +4,7 @@ use jsonwebtoken::{decode, encode, Algorithm, DecodingKey, EncodingKey, Validati
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 
-const JWT_DURATION: u64 = 60 * 60 * 24 * 7;
+const JWT_DURATION: u64 = 60 * 60 * 24 * 3;
 const JWT_ISS: &str = "chat_server";
 const JWT_AUD: &str = "chat_web";
 

@@ -18,6 +18,8 @@ config = "0.15.6"
 hyper = { version = "1.5.2", features = ["full"] }
 jsonwebtoken = "9.3.0"
 pem = "3.0.4"
+r2d2 = "0.8.10"
+redis = { version = "0.28.2", features = ["r2d2"] }
 secrecy = { version = "0.10.3", features = ["serde"] }
 serde = { version = "1.0.217", features = ["derive"] }
 serde_json = "1.0.137"

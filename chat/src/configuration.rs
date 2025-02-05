@@ -9,6 +9,7 @@ pub struct AppConfig {
     pub application: ApplicationConfig,
     pub database: DatabaseConfig,
     pub auth: AuthConfig,
+    pub redis: RedisConfig,
 }
 
 impl AppConfig {}
@@ -49,6 +50,27 @@ pub struct AuthConfig {
     pub pk: SecretBox<String>,
 }
 
+#[derive(Debug, Deserialize)]
+pub struct RedisConfig {
+    pub password: SecretBox<String>,
+    #[serde(deserialize_with = "deserialize_number_from_string")]
+    pub port: u16,
+    pub host: String,
+    #[serde(deserialize_with = "deserialize_number_from_string")]
+    pub database: u8,
+}
+
+impl RedisConfig {
+    pub fn connection_url(&self) -> SecretBox<String> {
+        SecretBox::new(Box::new(format!(
+            "redis://{}:{}/{}",
+            self.host,
+            self.port,
+            self.database
+        )))
+    }
+}
+
 pub fn get_configuration() -> Result<AppConfig, config::ConfigError> {
     let base_path = std::env::current_dir().expect("Failed to determine the current directory");
     let configuration_directory = base_path.join("chat").join("configuration");
@@ -62,6 +84,7 @@ pub fn get_configuration() -> Result<AppConfig, config::ConfigError> {
         .build()?;
     Ok(configs.try_deserialize::<AppConfig>()?)
 }
+
 
 #[cfg(test)]
 pub fn get_configuration_test() -> Result<AppConfig, config::ConfigError> {
