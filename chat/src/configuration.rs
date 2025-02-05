@@ -1,3 +1,5 @@
+use std::str::FromStr;
+
 use config::Config;
 use secrecy::{ExposeSecret, SecretBox};
 use serde::Deserialize;
@@ -76,11 +78,14 @@ pub fn get_configuration_test() -> Result<AppConfig, config::ConfigError> {
     Ok(configs.try_deserialize::<AppConfig>()?)
 }
 
-fn deserialize_number_from_string<'de, D>(deserializer: D) -> Result<u16, D::Error>
+
+fn deserialize_number_from_string<'de, D, T>(deserializer: D) -> Result<T, D::Error>
 where
     D: serde::Deserializer<'de>,
+    T: FromStr + serde::Deserialize<'de>,
+    <T as FromStr>::Err: std::fmt::Display,
 {
     let port = String::deserialize(deserializer)?;
-    let port = port.parse::<u16>().map_err(serde::de::Error::custom)?;
+    let port = port.parse::<T>().map_err(serde::de::Error::custom)?;
     Ok(port)
 }
