@@ -49,11 +49,12 @@ pub fn get_configuration() -> Result<Settings, config::ConfigError> {
 
     let settings = Config::builder()
         .add_source(config::File::with_name(
-            configuration_directory.to_str().unwrap_or_else(|| "/opt"),
+            configuration_directory.to_str().unwrap_or("/opt"),
         ))
         .build()?;
 
-    Ok(settings.try_deserialize::<Settings>()?)
+    let app_config = settings.try_deserialize::<Settings>()?;
+    Ok(app_config)
 }
 
 fn deserialize_number_from_string<'de, D>(deserializer: D) -> Result<u16, D::Error>
