@@ -22,7 +22,7 @@ pub struct ChatEncodingKey(EncodingKey);
 impl ChatEncodingKey {
     pub fn load(priv_pem: &str) -> Result<Self, AppError> {
         let pem = pem::parse(priv_pem.as_bytes())?;
-        let encoding_key = EncodingKey::from_ed_der(&pem.contents());
+        let encoding_key = EncodingKey::from_ed_der(pem.contents());
         Ok(Self(encoding_key))
     }
 
@@ -47,7 +47,7 @@ pub struct ChatDecodingKey(DecodingKey);
 impl ChatDecodingKey {
     pub fn load(pub_pem: &str) -> Result<Self, AppError> {
         let pem = pem::parse(pub_pem.as_bytes())?;
-        let decoding_key = DecodingKey::from_ed_der(&pem.contents());
+        let decoding_key = DecodingKey::from_ed_der(pem.contents());
         Ok(Self(decoding_key))
     }
 
@@ -55,7 +55,7 @@ impl ChatDecodingKey {
         let mut validation = Validation::new(Algorithm::EdDSA);
         validation.aud = Some(HashSet::from([JWT_AUD.to_string()]));
         validation.iss = Some(HashSet::from([JWT_ISS.to_string()]));
-        let claims = decode::<Claims>(&token, &self.0, &validation)?;
+        let claims = decode::<Claims>(token, &self.0, &validation)?;
         Ok(claims.claims.sub)
     }
 }

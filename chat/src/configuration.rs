@@ -64,9 +64,7 @@ impl RedisConfig {
     pub fn connection_url(&self) -> SecretBox<String> {
         SecretBox::new(Box::new(format!(
             "redis://{}:{}/{}",
-            self.host,
-            self.port,
-            self.database
+            self.host, self.port, self.database
         )))
     }
 }
@@ -79,12 +77,13 @@ pub fn get_configuration() -> Result<AppConfig, config::ConfigError> {
 
     let configs = Config::builder()
         .add_source(config::File::with_name(
-            configuration_directory.to_str().unwrap_or_else(|| "/etc"),
+            configuration_directory.to_str().unwrap_or("/etc"),
         ))
         .build()?;
-    Ok(configs.try_deserialize::<AppConfig>()?)
-}
 
+    let app_config = configs.try_deserialize::<AppConfig>()?;
+    Ok(app_config)
+}
 
 #[cfg(test)]
 pub fn get_configuration_test() -> Result<AppConfig, config::ConfigError> {
@@ -98,9 +97,10 @@ pub fn get_configuration_test() -> Result<AppConfig, config::ConfigError> {
             configuration_directory.to_str().unwrap_or_else(|| "/etc"),
         ))
         .build()?;
-    Ok(configs.try_deserialize::<AppConfig>()?)
-}
 
+    let app_config = configs.try_deserialize::<AppConfig>()?;
+    Ok(app_config)
+}
 
 fn deserialize_number_from_string<'de, D, T>(deserializer: D) -> Result<T, D::Error>
 where

@@ -30,9 +30,9 @@ pub(crate) struct AppState {
 
 impl AppState {
     pub async fn try_new(config: AppConfig) -> Result<Self, AppError> {
-        let ek = ChatEncodingKey::load(&config.auth.sk.expose_secret())?;
-        let dk = ChatDecodingKey::load(&config.auth.pk.expose_secret())?;
-        let pool = PgPool::connect(&config.database.connection_string().expose_secret()).await?;
+        let ek = ChatEncodingKey::load(config.auth.sk.expose_secret())?;
+        let dk = ChatDecodingKey::load(config.auth.pk.expose_secret())?;
+        let pool = PgPool::connect(config.database.connection_string().expose_secret()).await?;
 
         // let redis_client =
         //     redis::Client::open(config.redis.connection_url().expose_secret().as_ref())?;
@@ -115,6 +115,7 @@ pub async fn get_router(config: AppConfig) -> Result<Router, AppError> {
     let state = AppState::try_new(config).await?;
 
     let api = Router::new()
+        .route("/users", get(list_chat_users_handler))
         .route(
             "/chat",
             get(list_chat_handler)

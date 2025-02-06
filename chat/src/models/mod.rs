@@ -1,4 +1,5 @@
 mod user;
+mod workspace;
 
 pub use user::{CreateUser, SigninUser};
 
@@ -9,10 +10,26 @@ use sqlx::prelude::FromRow;
 #[derive(Debug, Clone, PartialEq, FromRow, Serialize, Deserialize)]
 pub struct User {
     pub id: i64,
+    pub ws_id: i64,
     pub fullname: String,
     pub email: String,
     #[sqlx(default)]
     #[serde(skip)]
     pub password_hash: Option<String>,
     pub created_at: DateTime<Utc>,
+}
+
+#[derive(Debug, Clone, PartialEq, FromRow, Serialize, Deserialize)]
+pub struct Workspace {
+    pub id: i64,
+    pub name: String,
+    pub owner_id: i64,
+    pub created_at: DateTime<Utc>,
+}
+
+#[derive(Debug, Clone, PartialEq, FromRow, Serialize, Deserialize)]
+pub struct ChatUser {
+    pub id: i64,
+    pub fullname: String,
+    pub email: String,
 }

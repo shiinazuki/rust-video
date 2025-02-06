@@ -9,12 +9,14 @@ use sqlx::PgPool;
 
 use crate::{AppError, User};
 
+use super::Workspace;
+
 impl User {
     /// 根据 email 查询用户
     pub async fn find_by_email(email: &str, pool: &PgPool) -> Result<Option<Self>, AppError> {
         let user = sqlx::query_as(
             r#"
-            SELECT id, fullname, email, created_at FROM users WHERE email = $1
+            SELECT id, ws_id, fullname, email, created_at FROM users WHERE email = $1
             "#,
         )
         .bind(email)
@@ -24,24 +26,38 @@ impl User {
         Ok(user)
     }
 
+    /// Create a new user
+    // TODO: user transaction for workspace creation and user creation
     pub async fn create(create_user: &CreateUser, pool: &PgPool) -> Result<Self, AppError> {
-        let password_hash = hash_password(&create_user.password)?;
-        let user = Self::find_by_email(&create_user.email, &pool).await?;
+        let user = Self::find_by_email(&create_user.email, pool).await?;
         if user.is_some() {
             return Err(AppError::EmailAlreadyExists(create_user.email.clone()));
         }
-        let user = sqlx::query_as(
+
+        // check if workspace exists, if not create one
+        let ws = match Workspace::find_by_name(&create_user.woekspace, pool).await? {
+            Some(ws) => ws,
+            None => Workspace::create(&create_user.woekspace, 0, pool).await?,
+        };
+
+        let password_hash = hash_password(&create_user.password)?;
+        let user: User = sqlx::query_as(
             r#"
-                INSERT INTO users ( email, fullname, password_hash)
-                VALUES ($1, $2, $3)
-                RETURNING id, fullname, email, created_at
+                INSERT INTO users (ws_id, email, fullname, password_hash)
+                VALUES ($1, $2, $3, $4)
+                RETURNING id, ws_id, fullname, email, created_at;
             "#,
         )
+        .bind(ws.id)
         .bind(&create_user.email)
         .bind(&create_user.fullname)
         .bind(password_hash)
         .fetch_one(pool)
         .await?;
+
+        if ws.owner_id == 0 {
+            ws.update_owner(user.id as _, pool).await?;
+        }
 
         Ok(user)
     }
@@ -49,7 +65,8 @@ impl User {
     pub async fn verify(signin_user: &SigninUser, pool: &PgPool) -> Result<Option<Self>, AppError> {
         let user: Option<User> = sqlx::query_as(
             r#"
-             SELECT * FROM users WHERE email = $1
+             SELECT id, ws_id, fullname, email, password_hash, created_at
+                FROM users WHERE email = $1
             "#,
         )
         .bind(&signin_user.email)
@@ -97,6 +114,8 @@ fn verify_passwor(password: &str, password_hash: &str) -> Result<bool, AppError>
 pub struct CreateUser {
     pub fullname: String,
     pub email: String,
+    #[serde(default = "get_default_workspace_name")]
+    pub woekspace: String,
     pub password: String,
 }
 
@@ -106,11 +125,16 @@ pub struct SigninUser {
     pub password: String,
 }
 
+fn get_default_workspace_name() -> String {
+    "none".to_string()
+}
+
 #[cfg(test)]
 impl User {
     pub fn new(id: i64, fullname: &str, email: &str) -> Self {
         Self {
             id,
+            ws_id: 0,
             fullname: fullname.to_string(),
             email: email.to_string(),
             password_hash: None,
@@ -121,8 +145,9 @@ impl User {
 
 #[cfg(test)]
 impl CreateUser {
-    pub fn new(fullname: &str, email: &str, password: &str) -> Self {
+    pub fn new(workspace: &str, fullname: &str, email: &str, password: &str) -> Self {
         Self {
+            woekspace: workspace.to_string(),
             fullname: fullname.to_string(),
             email: email.to_string(),
             password: password.to_string(),
@@ -173,7 +198,7 @@ mod tests {
             Path::new("../migrations"),
         );
         let pool = tdb.get_pool().await;
-        let create_user = CreateUser::new("shiina", "1@xxx.org", "hunted");
+        let create_user = CreateUser::new("none", "shiina", "1@xxx.org", "hunted");
         User::create(&create_user, &pool).await?;
         let ret = User::create(&create_user, &pool).await;
         match ret {
@@ -199,7 +224,7 @@ mod tests {
         );
         let pool = tdb.get_pool().await;
 
-        let create_user = CreateUser::new("shiina", "1@xxx.org", "hunted");
+        let create_user = CreateUser::new("none", "shiina", "1@xxx.org", "hunted");
 
         let user = User::create(&create_user, &pool).await?;
         assert_eq!(user.email, create_user.email);

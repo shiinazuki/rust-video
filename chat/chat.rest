@@ -46,4 +46,7 @@ Content-Type: application/json
 Authorization: Bearer {{token}}
 
 
-
+### get user list
+GET http://127.0.0.1:8002/api/users
+Content-Type: application/json
+Authorization: Bearer {{token}}
