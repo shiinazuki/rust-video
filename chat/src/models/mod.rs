@@ -1,5 +1,6 @@
 mod user;
 mod workspace;
+mod chat;
 
 pub use user::{CreateUser, SigninUser};
 
@@ -17,6 +18,25 @@ pub struct User {
     #[serde(skip)]
     pub password_hash: Option<String>,
     pub created_at: DateTime<Utc>,
+}
+
+#[derive(Debug, Clone, PartialEq, FromRow, Serialize, Deserialize)]
+pub struct Chat {
+    pub id: i64,
+    pub ws_id: i64,
+    pub name: Option<String>,
+    pub r#type: ChatType,
+    pub members: Vec<i64>,
+    pub created_at: DateTime<Utc>,
+}
+
+#[derive(Debug, Clone, PartialEq, PartialOrd, Serialize, Deserialize, sqlx::Type)]
+#[sqlx(type_name = "chat_type", rename_all = "snake_case")]
+pub enum ChatType {
+    Single,
+    Group,
+    PrivateChannel,
+    PublicChannel,
 }
 
 #[derive(Debug, Clone, PartialEq, FromRow, Serialize, Deserialize)]

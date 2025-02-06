@@ -84,27 +84,15 @@ impl Workspace {
 
 #[cfg(test)]
 mod tests {
-    use std::path::Path;
-
-    use crate::{configuration::get_configuration_test, models::CreateUser, User};
+    use crate::{models::CreateUser, test_util::get_test_pool, User};
 
     use super::*;
     use anyhow::Result;
-    use secrecy::ExposeSecret;
-    use sqlx_db_tester::TestPg;
 
     #[tokio::test]
     async fn workspace_should_create_and_set_owner() -> Result<()> {
-        let config = get_configuration_test()?;
-        let tdb = TestPg::new(
-            config
-                .database
-                .connection_string()
-                .expose_secret()
-                .to_string(),
-            Path::new("../migrations"),
-        );
-        let pool = tdb.get_pool().await;
+        let (_tdb, pool) = get_test_pool(None).await;
+
         let ws = Workspace::create("test", 0, &pool).await?;
 
         let create_user = CreateUser::new(&ws.name, "shiina", "1@xxx.org", "hunted");
@@ -122,48 +110,20 @@ mod tests {
 
     #[tokio::test]
     async fn workspace_should_find_by_name() -> Result<()> {
-        let config = get_configuration_test()?;
-        let tdb = TestPg::new(
-            config
-                .database
-                .connection_string()
-                .expose_secret()
-                .to_string(),
-            Path::new("../migrations"),
-        );
-        let pool = tdb.get_pool().await;
-        let _ws = Workspace::create("test", 0, &pool).await?;
-        let ws = Workspace::find_by_name("test", &pool).await?;
+        let (_tdb, pool) = get_test_pool(None).await;
+        let ws = Workspace::find_by_name("foo", &pool).await?;
 
-        assert_eq!(ws.unwrap().name, "test");
+        assert_eq!(ws.unwrap().name, "foo");
         Ok(())
     }
 
     #[tokio::test]
     async fn workspace_should_fetch_all_chat_users() -> Result<()> {
-        let config = get_configuration_test()?;
-        let tdb = TestPg::new(
-            config
-                .database
-                .connection_string()
-                .expose_secret()
-                .to_string(),
-            Path::new("../migrations"),
-        );
-        let pool = tdb.get_pool().await;
-        let ws = Workspace::create("test", 0, &pool).await?;
+        let (_tdb, pool) = get_test_pool(None).await;
 
-        let create_user = CreateUser::new(&ws.name, "shiina", "1@xxx.org", "hunted");
-        let user1 = User::create(&create_user, &pool).await?;
+        let users = Workspace::fetch_all_chat_users(1, &pool).await?;
 
-        let create_user = CreateUser::new(&ws.name, "iori", "2@xxx.org", "hunted");
-        let user2 = User::create(&create_user, &pool).await?;
-
-        let users = Workspace::fetch_all_chat_users(ws.id as _, &pool).await?;
-
-        assert_eq!(users.len(), 2);
-        assert_eq!(users[0].id, user1.id);
-        assert_eq!(users[1].id, user2.id);
+        assert_eq!(users.len(), 5);
         Ok(())
     }
 }

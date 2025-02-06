@@ -75,7 +75,7 @@ mod tests {
     #[tokio::test]
     async fn signup_should_work() -> Result<()> {
         let config = get_configuration_test()?;
-        let create_user = CreateUser::new("none", "iori2", "abc@ma.org", "123456");
+        let create_user = CreateUser::new("foo", "iori2", "abc@ma.org", "123456");
         let (_tdb, state) = AppState::new_for_test(config).await?;
         let ret = signup_handler(State(state), Json(create_user))
             .await?
@@ -90,9 +90,8 @@ mod tests {
     #[tokio::test]
     async fn signup_duplicate_user_should_409() -> Result<()> {
         let config = get_configuration_test()?;
-        let create_user = CreateUser::new("none", "iori2", "abc@ma.org", "123456");
+        let create_user = CreateUser::new("foo", "test", "test@acme.org", "123456");
         let (_tdb, state) = AppState::new_for_test(config).await?;
-        signup_handler(State(state.clone()), Json(create_user.clone())).await?;
         let ret = signup_handler(State(state), Json(create_user))
             .await
             .into_response();
@@ -101,7 +100,7 @@ mod tests {
 
         let ret: ErrorOutput = serde_json::from_slice(&body)?;
 
-        assert_eq!(ret.error, "email already exists: abc@ma.org");
+        assert_eq!(ret.error, "email already exists: test@acme.org");
 
         Ok(())
     }
@@ -110,13 +109,9 @@ mod tests {
     async fn signin_should_work() -> Result<()> {
         let config = get_configuration_test()?;
         let (_tdb, state) = AppState::new_for_test(config).await?;
-
-        let workspace = "none";
-        let name = "iori";
-        let email = "abc@d.org";
+    
+        let email = "tom@acme.org";
         let password = "123456";
-        let create_user = CreateUser::new(workspace, name, email, password);
-        User::create(&create_user, &state.pool).await?;
         let signin_user = SigninUser::new(email, password);
 
         let ret = signin_handler(State(state), Json(signin_user))
@@ -134,8 +129,8 @@ mod tests {
         let config = get_configuration_test()?;
         let (_tdb, state) = AppState::new_for_test(config).await?;
 
-        let email = "abc@d.org";
-        let password = "123456";
+        let email = "tom@acme.org";
+        let password = "1234567";
 
         let signin_user = SigninUser::new(email, password);
 

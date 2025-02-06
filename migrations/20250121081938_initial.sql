@@ -20,7 +20,7 @@ AS ENUM ('single', 'group', 'private_channel', 'public_channel');
 -- chat table
 CREATE TABLE IF NOT EXISTS chats (
     id BIGSERIAL PRIMARY KEY,
-    name VARCHAR(128) NOT NULL UNIQUE,
+    name VARCHAR(64),
     type chat_type NOT NULL,
     members BIGINT[] NOT NULL,
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP

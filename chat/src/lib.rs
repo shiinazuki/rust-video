@@ -51,39 +51,69 @@ impl AppState {
 }
 
 #[cfg(test)]
-impl AppState {
-    pub async fn new_for_test(
-        config: AppConfig,
-    ) -> Result<(sqlx_db_tester::TestPg, Self), AppError> {
-        use sqlx_db_tester::TestPg;
-        let ek = ChatEncodingKey::load(&config.auth.sk.expose_secret())?;
-        let dk = ChatDecodingKey::load(&config.auth.pk.expose_secret())?;
+mod test_util {
+    use super::*;
+    use crate::configuration::get_configuration_test;
+    use sqlx_db_tester::TestPg;
 
-        let tdb = TestPg::new(
-            config
-                .database
-                .connection_string()
-                .expose_secret()
-                .to_owned(),
-            std::path::Path::new("../migrations"),
-        );
+    impl AppState {
+        pub async fn new_for_test(config: AppConfig) -> Result<(TestPg, Self), AppError> {
+            let ek = ChatEncodingKey::load(&config.auth.sk.expose_secret())?;
+            let dk = ChatDecodingKey::load(&config.auth.pk.expose_secret())?;
+
+            let (tdb, pool) = get_test_pool(None).await;
+
+            // let redis_client =
+            //     redis::Client::open(config.redis.connection_url().expose_secret().as_ref())?;
+
+            // let redis_pool = r2d2::Pool::builder().build(redis_client)?;
+
+            let state = Self {
+                inner: Arc::new(AppStateInner {
+                    config,
+                    ek,
+                    dk,
+                    pool,
+                    // redis_pool,
+                }),
+            };
+            Ok((tdb, state))
+        }
+    }
+
+    #[cfg(test)]
+    pub async fn get_test_pool(db_url: Option<&str>) -> (TestPg, PgPool) {
+        use sqlx::Executor;
+
+        let db_url = match db_url {
+            Some(v) => v.to_string(),
+            None => {
+                let config = get_configuration_test().unwrap();
+                let db_url = config
+                    .database
+                    .connection_string()
+                    .expose_secret()
+                    .to_string();
+                db_url
+            }
+        };
+        let tdb = TestPg::new(db_url, std::path::Path::new("../migrations"));
         let pool = tdb.get_pool().await;
 
-        // let redis_client =
-        //     redis::Client::open(config.redis.connection_url().expose_secret().as_ref())?;
+        // run prepared sql to insert test data
+        let sql = include_str!("../fixtures/test.sql").split(';');
+        let mut ts = pool.begin().await.expect("begin transaction failed");
 
-        // let redis_pool = r2d2::Pool::builder().build(redis_client)?;
+        for s in sql {
+            if s.trim().is_empty() {
+                continue;
+            }
+            ts.execute(s).await.unwrap();
+        }
 
-        let state = Self {
-            inner: Arc::new(AppStateInner {
-                config,
-                ek,
-                dk,
-                pool,
-                // redis_pool,
-            }),
-        };
-        Ok((tdb, state))
+        ts.commit().await.expect("commit transaction failed");
+
+        (tdb, pool)
     }
 }
 
