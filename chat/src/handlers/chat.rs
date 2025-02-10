@@ -5,7 +5,10 @@ use axum::{
 };
 use hyper::StatusCode;
 
-use crate::{models::CreateChat, AppError, AppState, Chat, User};
+use crate::{
+    models::{CreateChat, UpdateChat},
+    AppError, AppState, Chat, User,
+};
 
 pub(crate) async fn list_chat_handler(
     Extension(user): Extension<User>,
@@ -39,10 +42,17 @@ pub(crate) async fn get_chat_handler(
 pub(crate) async fn update_chat_handler(
     Extension(user): Extension<User>,
     State(state): State<AppState>,
+    Path(id): Path<u64>,
+    Json(update_chat): Json<UpdateChat>,
 ) -> Result<impl IntoResponse, AppError> {
-    Ok((StatusCode::OK, Json("anc".to_string())))
+    let chat = Chat::update(update_chat, user.ws_id as _, &state.pool).await?;
+    Ok((StatusCode::OK, Json(chat)))
 }
 
-pub(crate) async fn delete_chat_handler() -> impl IntoResponse {
-    "delete caht"
+pub(crate) async fn delete_chat_handler(
+    State(state): State<AppState>,
+    Path(id): Path<u64>,
+) -> Result<impl IntoResponse, AppError> {
+    let chat = Chat::delete_by_id(id, &state.pool).await?;
+    Ok((StatusCode::OK, Json(chat)))
 }

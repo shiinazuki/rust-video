@@ -13,7 +13,7 @@ pub use models::{Chat, User};
 
 use axum::{
     middleware::from_fn_with_state,
-    routing::{get, patch, post},
+    routing::{get, post},
     Router,
 };
 // use r2d2::Pool;
