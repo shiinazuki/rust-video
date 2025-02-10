@@ -31,6 +31,12 @@ pub enum AppError {
 
     #[error("parse pem error: {0}")]
     ChatPemError(#[from] pem::PemError),
+
+    #[error("parse pem error: {0}")]
+    CreateChatError(String),
+
+    #[error("Not found: {0}")]
+    NotFound(String),
     // #[error("connection redis error: {0}")]
     // RedisConnectionError(#[from] redis::RedisError),
 
@@ -46,6 +52,8 @@ impl IntoResponse for AppError {
             AppError::PasswordHashError(_) => StatusCode::UNPROCESSABLE_ENTITY,
             AppError::JsonWebTokenError(_) => StatusCode::FORBIDDEN,
             AppError::ChatPemError(_) => StatusCode::INTERNAL_SERVER_ERROR,
+            AppError::CreateChatError(_) => StatusCode::BAD_REQUEST,
+            AppError::NotFound(_) => StatusCode::NOT_FOUND,
             // AppError::RedisConnectionError(_) => StatusCode::INTERNAL_SERVER_ERROR,
             // AppError::RedisR2d2Error(_) => StatusCode::INTERNAL_SERVER_ERROR,
         };

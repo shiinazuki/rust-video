@@ -9,7 +9,7 @@ use sqlx::PgPool;
 
 use crate::{AppError, User};
 
-use super::Workspace;
+use super::{ChatUser, Workspace};
 
 impl User {
     /// 根据 email 查询用户
@@ -35,9 +35,9 @@ impl User {
         }
 
         // check if workspace exists, if not create one
-        let ws = match Workspace::find_by_name(&create_user.woekspace, pool).await? {
+        let ws = match Workspace::find_by_name(&create_user.workspace, pool).await? {
             Some(ws) => ws,
-            None => Workspace::create(&create_user.woekspace, 0, pool).await?,
+            None => Workspace::create(&create_user.workspace, 0, pool).await?,
         };
 
         let password_hash = hash_password(&create_user.password)?;
@@ -89,6 +89,38 @@ impl User {
     }
 }
 
+impl ChatUser {
+    pub async fn fetch_by_ids(ids: &[i64], pool: &PgPool) -> Result<Vec<Self>, AppError> {
+        let users = sqlx::query_as(
+            r#"
+            SELECT id, fullname, email
+            FROM users
+            WHERE id = ANY($1)
+            "#,
+        )
+        .bind(ids)
+        .fetch_all(pool)
+        .await?;
+
+        Ok(users)
+    }
+
+    pub async fn fetch_all(ws_id: u64, pool: &PgPool) -> Result<Vec<Self>, AppError> {
+        let users = sqlx::query_as(
+            r#"
+            SELECT id, fullname, email
+            FROM users
+            WHERE ws_id = $1
+            "#,
+        )
+        .bind(ws_id as i64)
+        .fetch_all(pool)
+        .await?;
+
+        Ok(users)
+    }
+}
+
 fn hash_password(password: &str) -> Result<String, AppError> {
     let salt = SaltString::generate(&mut OsRng);
     let argon2 = Argon2::default();
@@ -114,8 +146,7 @@ fn verify_passwor(password: &str, password_hash: &str) -> Result<bool, AppError>
 pub struct CreateUser {
     pub fullname: String,
     pub email: String,
-    #[serde(default = "get_default_workspace_name")]
-    pub woekspace: String,
+    pub workspace: String,
     pub password: String,
 }
 
@@ -123,10 +154,6 @@ pub struct CreateUser {
 pub struct SigninUser {
     pub email: String,
     pub password: String,
-}
-
-fn get_default_workspace_name() -> String {
-    "none".to_string()
 }
 
 #[cfg(test)]
@@ -147,7 +174,7 @@ impl User {
 impl CreateUser {
     pub fn new(workspace: &str, fullname: &str, email: &str, password: &str) -> Self {
         Self {
-            woekspace: workspace.to_string(),
+            workspace: workspace.to_string(),
             fullname: fullname.to_string(),
             email: email.to_string(),
             password: password.to_string(),
@@ -201,7 +228,7 @@ mod tests {
     async fn create_and_verify_user_should_work() -> Result<()> {
         let (_tdb, pool) = get_test_pool(None).await;
 
-        let create_user = CreateUser::new("none", "shiina", "1@xxx.org", "hunted");
+        let create_user = CreateUser::new("none", "shiina", "11@xxx.org", "hunted");
 
         let user = User::create(&create_user, &pool).await?;
         assert_eq!(user.email, create_user.email);
@@ -214,7 +241,7 @@ mod tests {
         assert_eq!(user.email, create_user.email);
         assert_eq!(user.fullname, create_user.fullname);
 
-        let signin_user = SigninUser::new("1@xxx.org", "hunted");
+        let signin_user = SigninUser::new("11@xxx.org", "hunted");
         let user = User::verify(&signin_user, &pool).await?;
         assert!(user.is_some());
 

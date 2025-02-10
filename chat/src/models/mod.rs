@@ -1,7 +1,8 @@
+mod chat;
 mod user;
 mod workspace;
-mod chat;
 
+pub use chat::CreateChat;
 pub use user::{CreateUser, SigninUser};
 
 use chrono::{DateTime, Utc};

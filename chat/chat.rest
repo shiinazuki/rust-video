@@ -6,8 +6,22 @@ Content-Type: application/json
 # x-request-id: dfasfds
 
 {
+    "workspace": "acme",
     "fullname": "iori" ,
     "email": "abd@ma.org",
+    "password": "123456"
+}
+
+
+### signup user
+POST http://127.0.0.1:8002/api/signup
+Content-Type: application/json
+# x-request-id: dfasfds
+
+{
+    "workspace": "acme",
+    "fullname": "shiina" ,
+    "email": "abe@ma.org",
     "password": "123456"
 }
 
@@ -25,23 +39,33 @@ Content-Type: application/json
 
 
 ###
-GET http://127.0.0.1:8002/api/chat
+GET http://127.0.0.1:8002/api/chats
+Authorization: Bearer {{token}}
+
+### create chat
+POST http://127.0.0.1:8002/api/chats
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "name": "acme",
+    "members": [1, 2],
+    "public": false
+}
+
+### get chat
+GET http://127.0.0.1:8002/api/chats/1
+Content-Type: application/json
 Authorization: Bearer {{token}}
 
 ###
-POST http://127.0.0.1:8002/api/chat
+PATCH  http://127.0.0.1:8002/api/chats
 Content-Type: application/json
 Authorization: Bearer {{token}}
 
 
 ###
-PATCH  http://127.0.0.1:8002/api/chat
-Content-Type: application/json
-Authorization: Bearer {{token}}
-
-
-###
-DELETE http://127.0.0.1:8002/api/chat
+DELETE http://127.0.0.1:8002/api/chats
 Content-Type: application/json
 Authorization: Bearer {{token}}
 
