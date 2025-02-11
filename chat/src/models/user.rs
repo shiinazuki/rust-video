@@ -105,6 +105,7 @@ impl ChatUser {
         Ok(users)
     }
 
+    #[allow(dead_code)]
     pub async fn fetch_all(ws_id: u64, pool: &PgPool) -> Result<Vec<Self>, AppError> {
         let users = sqlx::query_as(
             r#"

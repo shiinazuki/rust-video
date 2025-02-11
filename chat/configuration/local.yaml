@@ -20,3 +20,5 @@ auth:
   pk: |
     -----BEGIN PUBLIC KEY-----
     -----END PUBLIC KEY-----
+
+base_dir: "/usr/local/www"

@@ -45,7 +45,7 @@ pub(crate) async fn update_chat_handler(
     Path(id): Path<u64>,
     Json(update_chat): Json<UpdateChat>,
 ) -> Result<impl IntoResponse, AppError> {
-    let chat = Chat::update(update_chat, user.ws_id as _, &state.pool).await?;
+    let chat = Chat::update(update_chat, id as _, user.ws_id as _, &state.pool).await?;
     Ok((StatusCode::OK, Json(chat)))
 }
 

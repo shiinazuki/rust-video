@@ -5,6 +5,7 @@ mod middlewares;
 mod models;
 mod utils;
 
+use anyhow::Context;
 pub use configuration::{get_configuration, AppConfig};
 pub use error::{AppError, ErrorOutput};
 use handlers::*;
@@ -21,6 +22,7 @@ use axum::{
 use secrecy::ExposeSecret;
 use sqlx::PgPool;
 use std::{fmt, ops::Deref, sync::Arc};
+use tokio::fs;
 use utils::{ChatDecodingKey, ChatEncodingKey};
 
 #[derive(Debug, Clone)]
@@ -30,6 +32,10 @@ pub(crate) struct AppState {
 
 impl AppState {
     pub async fn try_new(config: AppConfig) -> Result<Self, AppError> {
+        fs::create_dir_all(&config.base_dir)
+            .await
+            .with_context(|| "create base_dir failed")?;
+
         let ek = ChatEncodingKey::load(config.auth.sk.expose_secret())?;
         let dk = ChatDecodingKey::load(config.auth.pk.expose_secret())?;
         let pool = PgPool::connect(config.database.connection_string().expose_secret()).await?;
@@ -155,6 +161,8 @@ pub async fn get_router(config: AppConfig) -> Result<Router, AppError> {
                 .post(send_message_handler),
         )
         .route("/chats/{id}/messages", get(list_message_handler))
+        .route("/upload", post(upload_handler))
+        .route("/files/{ws_id}/{*path}", get(file_handler))
         .layer(from_fn_with_state(state.clone(), verify_token))
         .route("/signin", post(signin_handler))
         .route("/signup", post(signup_handler));

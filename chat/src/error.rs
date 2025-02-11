@@ -37,6 +37,15 @@ pub enum AppError {
 
     #[error("Not found: {0}")]
     NotFound(String),
+
+    #[error("multipart error: {0}")]
+    ChatMultipartError(#[from] axum::extract::multipart::MultipartError),
+
+    #[error("general error: {0}")]
+    AnyError(#[from] anyhow::Error),
+
+    #[error("io error: {0}")]
+    IoError(#[from] std::io::Error),
     // #[error("connection redis error: {0}")]
     // RedisConnectionError(#[from] redis::RedisError),
 
@@ -54,6 +63,9 @@ impl IntoResponse for AppError {
             AppError::ChatPemError(_) => StatusCode::INTERNAL_SERVER_ERROR,
             AppError::CreateChatError(_) => StatusCode::BAD_REQUEST,
             AppError::NotFound(_) => StatusCode::NOT_FOUND,
+            AppError::ChatMultipartError(_) => StatusCode::INTERNAL_SERVER_ERROR,
+            AppError::AnyError(_) => StatusCode::INTERNAL_SERVER_ERROR,
+            AppError::IoError(_) => StatusCode::INTERNAL_SERVER_ERROR,
             // AppError::RedisConnectionError(_) => StatusCode::INTERNAL_SERVER_ERROR,
             // AppError::RedisR2d2Error(_) => StatusCode::INTERNAL_SERVER_ERROR,
         };

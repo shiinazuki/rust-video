@@ -1,4 +1,4 @@
-use std::str::FromStr;
+use std::{path::PathBuf, str::FromStr};
 
 use config::Config;
 use secrecy::{ExposeSecret, SecretBox};
@@ -10,9 +10,11 @@ pub struct AppConfig {
     pub database: DatabaseConfig,
     pub auth: AuthConfig,
     pub redis: RedisConfig,
+    pub base_dir: PathBuf,
 }
 
 impl AppConfig {}
+
 
 #[derive(Debug, Deserialize)]
 pub struct ApplicationConfig {
@@ -68,6 +70,7 @@ impl RedisConfig {
         )))
     }
 }
+
 
 pub fn get_configuration() -> Result<AppConfig, config::ConfigError> {
     let base_path = std::env::current_dir().expect("Failed to determine the current directory");

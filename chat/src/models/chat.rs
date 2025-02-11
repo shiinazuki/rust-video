@@ -1,5 +1,3 @@
-use std::{any::Any, mem};
-
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
 
@@ -16,7 +14,6 @@ pub struct CreateChat {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct UpdateChat {
-    pub id: u64,
     pub name: Option<String>,
     pub members: Vec<i64>,
     pub public: bool,
@@ -110,6 +107,7 @@ impl Chat {
 
     pub async fn update(
         update_chat: UpdateChat,
+        id: u64,
         ws_id: u64,
         pool: &PgPool,
     ) -> Result<Self, AppError> {
@@ -138,7 +136,7 @@ impl Chat {
         .bind(chat_type)
         .bind(update_chat.members)
         .bind(ws_id as i64)
-        .bind(update_chat.id as i64)
+        .bind(id as i64)
         .fetch_one(pool)
         .await?;
 
@@ -179,14 +177,13 @@ impl CreateChat {
 
 #[cfg(test)]
 impl UpdateChat {
-    pub fn new(id: u64, name: &str, members: &[i64], public: bool) -> Self {
+    pub fn new(name: &str, members: &[i64], public: bool) -> Self {
         let name = if name.is_empty() {
             None
         } else {
             Some(name.to_string())
         };
         Self {
-            id,
             name,
             members: members.to_vec(),
             public,
@@ -265,8 +262,8 @@ mod tests {
     async fn update_chat_should_work() -> Result<()> {
         let (_tdb, pool) = get_test_pool(None).await;
 
-        let update_chat = UpdateChat::new(1, "update_general", &[1, 2, 3], false);
-        let chat = Chat::update(update_chat, 2, &pool)
+        let update_chat = UpdateChat::new( "update_general", &[1, 2, 3], false);
+        let chat = Chat::update(update_chat, 1, 2, &pool)
             .await
             .with_context(|| "update chat failed")?;
 

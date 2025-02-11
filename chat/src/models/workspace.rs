@@ -66,6 +66,7 @@ impl Workspace {
         Ok(ws)
     }
 
+    #[allow(dead_code)]
     pub async fn find_by_id(id: u64, pool: &PgPool) -> Result<Option<Self>, AppError> {
         let ws = sqlx::query_as(
             r#"
