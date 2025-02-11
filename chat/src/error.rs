@@ -35,6 +35,12 @@ pub enum AppError {
     #[error("parse pem error: {0}")]
     CreateChatError(String),
 
+    #[error("")]
+    CreateMessageError(String),
+    
+    #[error("{0}")]
+    ChatFileError(String),
+
     #[error("Not found: {0}")]
     NotFound(String),
 
@@ -62,6 +68,8 @@ impl IntoResponse for AppError {
             AppError::JsonWebTokenError(_) => StatusCode::FORBIDDEN,
             AppError::ChatPemError(_) => StatusCode::INTERNAL_SERVER_ERROR,
             AppError::CreateChatError(_) => StatusCode::BAD_REQUEST,
+            AppError::CreateMessageError(_) => StatusCode::BAD_REQUEST,
+            AppError::ChatFileError(_) =>  StatusCode::BAD_REQUEST,
             AppError::NotFound(_) => StatusCode::NOT_FOUND,
             AppError::ChatMultipartError(_) => StatusCode::INTERNAL_SERVER_ERROR,
             AppError::AnyError(_) => StatusCode::INTERNAL_SERVER_ERROR,
