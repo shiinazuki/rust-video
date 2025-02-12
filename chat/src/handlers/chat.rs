@@ -51,10 +51,10 @@ pub(crate) async fn update_chat_handler(
     Ok((StatusCode::OK, Json(chat)))
 }
 
-pub(crate) async fn delete_chat_handler(
-    State(state): State<AppState>,
-    Path(id): Path<u64>,
+pub(crate) async fn delete_chat_handler(// State(state): State<AppState>,
+    // Path(id): Path<u64>,
 ) -> Result<impl IntoResponse, AppError> {
-    let chat = state.delete_chat_by_id(id).await?;
-    Ok((StatusCode::OK, Json(chat)))
+    // let chat = state.delete_chat_by_id(id).await?;
+    // Ok((StatusCode::OK, Json(chat)))
+    Ok("delete chat")
 }

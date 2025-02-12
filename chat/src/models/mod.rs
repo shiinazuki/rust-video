@@ -1,10 +1,11 @@
 mod chat;
 mod file;
+mod messsage;
 mod user;
 mod workspace;
-mod messsage;
 
 pub use chat::{CreateChat, UpdateChat};
+pub use messsage::{CreateMessage, ListMessages};
 pub use user::{CreateUser, SigninUser};
 
 use chrono::{DateTime, Utc};

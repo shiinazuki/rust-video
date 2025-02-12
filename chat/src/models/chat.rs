@@ -137,19 +137,36 @@ impl AppState {
         Ok(chat)
     }
 
-    pub async fn delete_chat_by_id(&self, id: u64) -> Result<Chat, AppError> {
-        let chat = sqlx::query_as(
+    // pub async fn delete_chat_by_id(&self, id: u64) -> Result<Chat, AppError> {
+    //     let chat = sqlx::query_as(
+    //         r#"
+    //         DELETE FROM chats
+    //         WHERE id = $1
+    //         RETURNING id, ws_id, name, type, members, created_at
+    //         "#,
+    //     )
+    //     .bind(id as i64)
+    //     .fetch_one(&self.pool)
+    //     .await?;
+
+    //     Ok(chat)
+    // }
+
+    pub async fn is_chat_member(&self, chat_id: u64, user_id: u64) -> Result<bool, AppError> {
+        let is_member = sqlx::query(
             r#"
-            DELETE FROM chats
-            WHERE id = $1
-            RETURNING id, ws_id, name, type, members, created_at
+            SELECT 1
+            FROM chats
+            WHERE id = $1 AND $2 = ANY(members)
+
             "#,
         )
-        .bind(id as i64)
-        .fetch_one(&self.pool)
+        .bind(chat_id as i64)
+        .bind(user_id as i64)
+        .fetch_optional(&self.pool)
         .await?;
 
-        Ok(chat)
+        Ok(is_member.is_some())
     }
 }
 
@@ -253,6 +270,23 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn chat_is_member_should_work() -> Result<()> {
+        let (_tdb, state) = AppState::new_for_test().await?;
+        let is_member = state.is_chat_member(1, 1).await.expect("is member failed");
+        assert!(is_member);
+
+        let is_member = state.is_chat_member(1, 6).await.expect("is member failed");
+        assert!(!is_member);
+
+        let is_member = state.is_chat_member(10, 1).await.expect("is member failed");
+        assert!(!is_member);
+
+        let is_member = state.is_chat_member(2, 4).await.expect("is member failed");
+        assert!(!is_member);
+        Ok(())
+    }
+
+    #[tokio::test]
     async fn update_chat_should_work() -> Result<()> {
         let (_tdb, state) = AppState::new_for_test().await?;
         let update_chat = UpdateChat::new("update_general", &[1, 2, 3], false);
@@ -269,19 +303,19 @@ mod tests {
         Ok(())
     }
 
-    #[tokio::test]
-    async fn delete_by_id_chat_should_work() -> Result<()> {
-        let (_tdb, state) = AppState::new_for_test().await?;
-        let chat = state
-            .delete_chat_by_id(1)
-            .await
-            .with_context(|| "delete chat failed")?;
+    // #[tokio::test]
+    // async fn delete_by_id_chat_should_work() -> Result<()> {
+    //     let (_tdb, state) = AppState::new_for_test().await?;
+    //     let chat = state
+    //         .delete_chat_by_id(1)
+    //         .await
+    //         .with_context(|| "delete chat failed")?;
 
-        assert_eq!(chat.ws_id, 1);
-        assert_eq!(chat.name.unwrap(), "general");
-        assert_eq!(chat.members.len(), 5);
-        assert_eq!(chat.r#type, ChatType::PublicChannel);
+    //     assert_eq!(chat.ws_id, 1);
+    //     assert_eq!(chat.name.unwrap(), "general");
+    //     assert_eq!(chat.members.len(), 5);
+    //     assert_eq!(chat.r#type, ChatType::PublicChannel);
 
-        Ok(())
-    }
+    //     Ok(())
+    // }
 }

@@ -1,8 +1,10 @@
 mod auth;
 mod request_id;
 mod server_time;
+mod chat;
 
 pub use auth::verify_token;
+pub use chat::verify_chat;
 
 use axum::{middleware::from_fn, Router};
 use server_time::ServerTimeLayer;
