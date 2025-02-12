@@ -44,7 +44,7 @@ pub async fn verify_token(State(state): State<AppState>, req: Request, next: Nex
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{configuration::get_configuration_test, User};
+    use crate::User;
     use anyhow::Result;
     use axum::{body::Body, middleware::from_fn_with_state, routing::get, Router};
     use tower::ServiceExt;
@@ -55,8 +55,7 @@ mod tests {
 
     #[tokio::test]
     async fn verify_token_middleware_should_work() -> Result<()> {
-        let config = get_configuration_test()?;
-        let (_tdb, state) = AppState::new_for_test(config).await?;
+        let (_tdb, state) = AppState::new_for_test().await?;
 
         let user = User::new(1, "shiina", "1@2.org");
         let token = state.ek.sign(user)?;

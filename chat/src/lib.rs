@@ -63,11 +63,17 @@ mod test_util {
     use sqlx_db_tester::TestPg;
 
     impl AppState {
-        pub async fn new_for_test(config: AppConfig) -> Result<(TestPg, Self), AppError> {
+        pub async fn new_for_test() -> Result<(TestPg, Self), AppError> {
+            let config = get_configuration_test().unwrap();
             let ek = ChatEncodingKey::load(&config.auth.sk.expose_secret())?;
             let dk = ChatDecodingKey::load(&config.auth.pk.expose_secret())?;
 
-            let (tdb, pool) = get_test_pool(None).await;
+            let db_url = &config
+                .database
+                .connection_string()
+                .expose_secret()
+                .to_string();
+            let (tdb, pool) = get_test_pool(Some(db_url)).await;
 
             // let redis_client =
             //     redis::Client::open(config.redis.connection_url().expose_secret().as_ref())?;
@@ -93,15 +99,8 @@ mod test_util {
 
         let db_url = match db_url {
             Some(v) => v.to_string(),
-            None => {
-                let config = get_configuration_test().unwrap();
-                let db_url = config
-                    .database
-                    .connection_string()
-                    .expose_secret()
-                    .to_string();
-                db_url
-            }
+            None => "postgres://shiina:shiina%40^%40%29^%25%28%26%25@74.211.109.216:36594/chat"
+                .to_string(),
         };
         let tdb = TestPg::new(db_url, std::path::Path::new("../migrations"));
         let pool = tdb.get_pool().await;
