@@ -1,0 +1,26 @@
+[package]
+name = "chat-notify-server"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1.0.95"
+axum = { version = "0.8.1", features = [
+    "http2",
+    "multipart",
+    "query",
+    "tracing",
+] }
+axum-extra = { version = "0.10.0", features = ["typed-header"] }
+chat-core = { workspace = true }
+config = "0.15.6"
+futures = "0.3.31"
+secrecy = { version = "0.10.3", features = ["serde"] }
+serde = { version = "1.0.217", features = ["derive"] }
+serde_yaml = "0.9.34"
+sqlx = { version = "0.8.3", features = ["postgres", "runtime-tokio-rustls"] }
+thiserror = "2.0.11"
+tokio = { version = "1.43.0", features = ["rt", "rt-multi-thread", "macros"] }
+tokio-stream = "0.1.17"
+tracing = "0.1.41"
+tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }

@@ -1,0 +1,24 @@
+application:
+    port: 8002
+    host: 0.0.0.0
+database:
+    host: "127.0.0.1"
+    port: 5428
+    username: "username"
+    password: "********"
+    database_name: "dbname"
+redis:
+    host: "127.0.0.1"
+    port: 6379
+    password: ""
+    database: 0
+auth:
+    sk: |
+        -----BEGIN PRIVATE KEY-----
+        -----END PRIVATE KEY-----
+
+    pk: |
+        -----BEGIN PUBLIC KEY-----
+        -----END PUBLIC KEY-----
+
+base_dir: "/usr/local/www"

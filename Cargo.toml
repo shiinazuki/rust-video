@@ -1,10 +1,13 @@
 [workspace]
-members = [ "chat",
+members = [
+    "chat-server",
+    "chat-core",
     "concurrency",
     "ecos-system",
     "error-code",
     "error-code-derive",
-    "macros", "notify-server",
+    "macros",
+    "chat-notify-server",
     "rcli",
     "simple-redis",
 ]
@@ -13,3 +16,4 @@ resolver = "2"
 [workspace.dependencies]
 error-code = { path = "./error-code" }
 error-code-derive = { path = "./error-code-derive" }
+chat-core = { path = "./chat-core" }

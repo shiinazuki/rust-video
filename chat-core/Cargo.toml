@@ -1,0 +1,35 @@
+[package]
+name = "chat-core"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1.0.95"
+axum = { version = "0.8.1", features = [
+    "http2",
+    "multipart",
+    "query",
+    "tracing",
+] }
+axum-extra = { version = "0.10.0", features = ["typed-header"] }
+chrono = { version = "0.4.39", features = ["serde"] }
+hyper = { version = "1.5.2", features = ["full"] }
+jsonwebtoken = "9.3.0"
+tokio = { version = "1.43.0", features = ["rt", "rt-multi-thread", "macros"] }
+tower = "0.5.2"
+tower-http = { version = "0.6.2", features = [
+    "compression-full",
+    "fs",
+    "trace",
+] }
+tracing = "0.1.41"
+serde = { version = "1.0.217", features = ["derive"] }
+sqlx = { version = "0.8.3", features = [
+    "chrono",
+    "postgres",
+    "runtime-tokio",
+    "runtime-tokio-rustls",
+    "tls-rustls",
+] }
+pem = "3.0.4"
+uuid = { version = "1.13.0", features = ["v7", "serde"] }
