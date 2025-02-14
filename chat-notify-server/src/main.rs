@@ -11,11 +11,12 @@ async fn main() -> Result<()> {
 
     tracing_subscriber::registry().with(console).init();
 
-    setup_pg_listener(&configs).await?;
-
-    let app = get_router();
-
     let addr = format!("{}:{}", configs.application.host, configs.application.port);
+
+    let (app, state) = get_router(configs);
+
+    setup_pg_listener(state).await?;
+
     let listener = TcpListener::bind(&addr).await?;
     info!("Listening on: {}", addr);
 

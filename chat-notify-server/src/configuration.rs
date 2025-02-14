@@ -9,6 +9,7 @@ use serde::Deserialize;
 pub struct AppConfig {
     pub application: ApplicationConfig,
     pub database: DatabaseConfig,
+    pub auth: AuthConfig,
 }
 
 #[derive(Debug, Deserialize)]
@@ -16,6 +17,11 @@ pub struct ApplicationConfig {
     #[serde(deserialize_with = "deserialize_number_from_string")]
     pub port: u16,
     pub host: String,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct AuthConfig {
+    pub pk: SecretBox<String>,
 }
 
 #[derive(Debug, Deserialize)]

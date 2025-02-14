@@ -1,9 +1,14 @@
 application:
-  port: 8004
-  host: 0.0.0.0
+    port: 8004
+    host: 0.0.0.0
 database:
-  host: "127.0.0.1"
-  port: 5428
-  username: "username"
-  password: "********"
-  database_name: "dbname"
+    host: "127.0.0.1"
+    port: 5428
+    username: "username"
+    password: "********"
+    database_name: "dbname"
+auth:
+    pk: |
+        -----BEGIN PUBLIC KEY-----
+        ****************************
+        -----END PUBLIC KEY-----

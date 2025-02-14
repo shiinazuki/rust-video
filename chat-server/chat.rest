@@ -43,7 +43,7 @@ POST http://127.0.0.1:8002/api/signin
 Content-Type: application/json
 
 {
-    "email": "abd@ma.org",
+    "email": "test@acme.org",
     "password": "123456"
 }
 
