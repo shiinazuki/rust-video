@@ -10,6 +10,7 @@ members = [
     "chat-notify-server",
     "rcli",
     "simple-redis",
+    "chat-test",
 ]
 resolver = "2"
 
@@ -17,3 +18,5 @@ resolver = "2"
 error-code = { path = "./error-code" }
 error-code-derive = { path = "./error-code-derive" }
 chat-core = { path = "./chat-core" }
+chat-server = { path = "./chat-server" }
+chat-notify-server = { path = "./chat-notify-server" }

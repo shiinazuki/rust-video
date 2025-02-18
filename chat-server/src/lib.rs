@@ -25,8 +25,8 @@ use std::{fmt, ops::Deref, sync::Arc};
 use tokio::fs;
 
 #[derive(Debug, Clone)]
-pub(crate) struct AppState {
-    inner: Arc<AppStateInner>,
+pub struct AppState {
+    pub inner: Arc<AppStateInner>,
 }
 
 impl AppState {
@@ -55,7 +55,7 @@ impl AppState {
     }
 }
 
-#[cfg(test)]
+#[cfg(feature = "test-util")]
 mod test_util {
     use super::*;
     use crate::configuration::get_configuration_test;
@@ -92,7 +92,7 @@ mod test_util {
         }
     }
 
-    #[cfg(test)]
+    #[cfg(feature = "test-util")]
     pub async fn get_test_pool(db_url: Option<&str>) -> (TestPg, PgPool) {
         use sqlx::Executor;
 
@@ -136,8 +136,8 @@ impl Deref for AppState {
     }
 }
 
-pub(crate) struct AppStateInner {
-    pub(crate) config: AppConfig,
+pub struct AppStateInner {
+    pub config: AppConfig,
     pub(crate) dk: ChatDecodingKey,
     pub(crate) ek: ChatEncodingKey,
     pub(crate) pool: PgPool,
@@ -152,9 +152,7 @@ impl fmt::Debug for AppStateInner {
     }
 }
 
-pub async fn get_router(config: AppConfig) -> Result<Router, AppError> {
-    let state = AppState::try_new(config).await?;
-
+pub async fn get_router(state: AppState) -> Result<Router, AppError> {
     let chat = Router::new()
         .route(
             "/{id}",

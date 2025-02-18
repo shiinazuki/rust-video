@@ -11,7 +11,7 @@ use tracing::{info, warn};
 use crate::AppState;
 
 #[derive(Debug, Serialize, Deserialize)]
-#[serde(tag = "type")]
+#[serde(tag = "event")]
 pub enum AppEvent {
     NewChat(Chat),
     AddToChat(Chat),
@@ -51,7 +51,7 @@ pub async fn setup_pg_listener(state: AppState) -> Result<()> {
             info!("Received notification: {:?}", notif);
             let notification = Notifucation::load(notif.channel(), notif.payload())?;
             let users = &state.users;
-            
+
             for user_id in notification.user_ids {
                 if let Some(tx) = users.get(&user_id) {
                     info!("Sending notification to user {}", user_id);

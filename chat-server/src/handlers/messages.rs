@@ -3,7 +3,7 @@ use axum::{
     response::IntoResponse,
     Extension, Json,
 };
-use hyper::HeaderMap;
+use hyper::{HeaderMap, StatusCode};
 use tokio::fs;
 use tracing::{info, warn};
 
@@ -23,7 +23,7 @@ pub(crate) async fn send_message_handler(
         .create_message(create_message, id, user.id as _)
         .await?;
 
-    Ok(Json(msg))
+    Ok((StatusCode::CREATED, Json(msg)))
 }
 
 pub(crate) async fn list_message_handler(

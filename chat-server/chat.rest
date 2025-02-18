@@ -128,8 +128,8 @@ Content-Type: application/json
 }
 
 
+
 ### get messages
 GET http://127.0.0.1:8002/api/chats/1/messages?limit=6&last_id=5
 Authorization: Bearer {{token}}
-
 

@@ -1,5 +1,5 @@
 use anyhow::Result;
-use chat_notify_server::{get_configuration, get_router, setup_pg_listener};
+use chat_notify_server::{get_configuration, get_router};
 use tokio::net::TcpListener;
 use tracing::{info, level_filters::LevelFilter};
 use tracing_subscriber::{fmt::Layer, layer::SubscriberExt, util::SubscriberInitExt, Layer as _};
@@ -13,9 +13,7 @@ async fn main() -> Result<()> {
 
     let addr = format!("{}:{}", configs.application.host, configs.application.port);
 
-    let (app, state) = get_router(configs);
-
-    setup_pg_listener(state).await?;
+    let app = get_router(configs).await?;
 
     let listener = TcpListener::bind(&addr).await?;
     info!("Listening on: {}", addr);

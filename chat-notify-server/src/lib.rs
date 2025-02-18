@@ -36,7 +36,7 @@ pub struct AppStateInner {
 
 impl AppState {
     pub fn new(config: AppConfig) -> Self {
-        let dk = ChatDecodingKey::load(&config.auth.pk.expose_secret())
+        let dk = ChatDecodingKey::load(config.auth.pk.expose_secret())
             .expect("Failed to load public key");
         let users = Arc::new(DashMap::new());
         Self(Arc::new(AppStateInner { config, users, dk }))
@@ -59,14 +59,16 @@ impl Deref for AppState {
     }
 }
 
-pub fn get_router(config: AppConfig) -> (Router, AppState) {
+pub async fn get_router(config: AppConfig) -> Result<Router> {
     let state = AppState::new(config);
+    setup_pg_listener(state.clone()).await?;
     let app = Router::new()
         .route("/events", get(sse_handler))
         .layer(from_fn_with_state(state.clone(), verify_token::<AppState>))
         .route("/", get(index_handler))
-        .with_state(state.clone());
-    (app, state)
+        .with_state(state);
+
+    Ok(app)
 }
 
 async fn index_handler() -> impl IntoResponse {
