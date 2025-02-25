@@ -9,10 +9,11 @@ fn main() -> Result<()> {
         fs::create_dir_all(&temp_dir).expect("Failed to create temp directory");
     }
 
-    env::set_var("TMPDIR", &temp_dir);
-    env::set_var("TEMP", &temp_dir);
-    env::set_var("TMP", &temp_dir);
-
+    unsafe {
+        env::set_var("TMPDIR", &temp_dir);
+        env::set_var("TEMP", &temp_dir);
+        env::set_var("TMP", &temp_dir);
+    }
     fs::create_dir_all("src/pb")?;
     let builder = tonic_build::configure();
     builder

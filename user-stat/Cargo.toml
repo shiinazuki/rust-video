@@ -1,0 +1,27 @@
+[package]
+name = "user-stat"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+anyhow = "1.0.95"
+config = "0.15.6"
+chrono = { version = "0.4.39", features = ["serde"] }
+nanoid = "0.4.0"
+prost = "0.13.5"
+prost-types = "0.13.5"
+rand = "0.9.0"
+serde = { version = "1.0.218", features = ["derive"] }
+secrecy = { version = "0.10.3", features = ["serde"] }
+sqlx = { version = "0.8.3", features = ["postgres", "runtime-tokio", "tls-rustls", "chrono"] }
+tokio = { version = "1.43.0", features = ["rt", "rt-multi-thread", "macros"] }
+tonic = { version = "0.12.3", features = ["zstd", "tls"] }
+
+
+[build-dependencies]
+anyhow = "1.0.95"
+prost-build = "0.13.5"
+tonic-build = "0.12.3"
+
+[dev-dependencies]
+fake = { version = "4.0.0", features = ["derive", "chrono"] }
