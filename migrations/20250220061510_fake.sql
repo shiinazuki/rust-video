@@ -21,6 +21,7 @@ CREATE TABLE user_stats(
     last_sms_notification TIMESTAMPTZ
 );
 
+-- 可以先不创建index 等生成好数据在创建
 CREATE INDEX user_stats_created_at_idx ON user_stats(created_at);
 CREATE INDEX user_stats_last_visited_at_idx ON user_stats(last_visited_at);
 CREATE INDEX user_stats_last_watched_at_idx ON user_stats(last_watched_at);

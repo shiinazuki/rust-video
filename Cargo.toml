@@ -11,7 +11,8 @@ members = [
     "rcli",
     "simple-redis",
     "chat-test",
-    "crm-server", "user-stat",
+    "crm-server",
+    "user-stat",
 ]
 resolver = "2"
 

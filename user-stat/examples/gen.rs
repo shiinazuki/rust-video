@@ -24,7 +24,7 @@ async fn main() -> Result<()> {
         .expose_secret()
         .to_owned();
     let pool = PgPool::connect(&db_url).await?;
-    for i in 1..=321 {
+    for i in 1..=500 {
         let users = (0..10000)
             .into_iter()
             .map(|_| Faker.fake::<UserStat>())

@@ -16,11 +16,15 @@ secrecy = { version = "0.10.3", features = ["serde"] }
 sqlx = { version = "0.8.3", features = ["postgres", "runtime-tokio", "tls-rustls", "chrono"] }
 tokio = { version = "1.43.0", features = ["rt", "rt-multi-thread", "macros"] }
 tonic = { version = "0.12.3", features = ["zstd", "tls"] }
-
+derive_builder = "0.20.2"
+futures = "0.3.31"
+itertools = "0.14.0"
+tracing = "0.1.41"
+tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
 
 [build-dependencies]
 anyhow = "1.0.95"
-prost-build = "0.13.5"
+proto-builder-trait = "0.6.2"
 tonic-build = "0.12.3"
 
 [dev-dependencies]
