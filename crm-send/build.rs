@@ -20,10 +20,10 @@ fn main() -> Result<()> {
 
     builder.out_dir("src/pb").compile_protos(
         &[
-            "../protos/metadata/messages.proto",
-            "../protos/metadata/rpc.proto",
+            "../protos/notification/messages.proto",
+            "../protos/notification/rpc.proto",
         ],
-        &["../protos/metadata"],
+        &["../protos/notification"],
     )?;
 
     Ok(())
