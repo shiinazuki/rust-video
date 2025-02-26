@@ -2,7 +2,7 @@ use std::ops::Deref;
 
 use bytes::BytesMut;
 
-use super::{utils::extract_simple_frame_data, RespDecode, RespEncode, RespError, CRLF_LEN};
+use super::{CRLF_LEN, RespDecode, RespEncode, RespError, utils::extract_simple_frame_data};
 
 #[derive(Debug, Clone, PartialOrd, PartialEq)]
 pub struct SimpleString(pub(crate) String);

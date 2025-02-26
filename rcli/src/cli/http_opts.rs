@@ -1,5 +1,5 @@
 use crate::cli::verify_path;
-use crate::{process_http_server, CmdExecutor};
+use crate::{CmdExecutor, process_http_server};
 use clap::Parser;
 use std::path::PathBuf;
 

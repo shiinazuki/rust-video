@@ -6,7 +6,7 @@ use tokio::{
     net::{TcpListener, TcpStream},
 };
 use tracing::{info, level_filters::LevelFilter, warn};
-use tracing_subscriber::{fmt::Layer, layer::SubscriberExt, util::SubscriberInitExt, Layer as _};
+use tracing_subscriber::{Layer as _, fmt::Layer, layer::SubscriberExt, util::SubscriberInitExt};
 
 #[derive(Debug, Serialize, Deserialize)]
 struct Config {

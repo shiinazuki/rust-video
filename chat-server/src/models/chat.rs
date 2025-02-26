@@ -1,5 +1,5 @@
-use chat_core::{Chat, ChatType};
 use crate::{AppError, AppState};
+use chat_core::{Chat, ChatType};
 
 use serde::{Deserialize, Serialize};
 

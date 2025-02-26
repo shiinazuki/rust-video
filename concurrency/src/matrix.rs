@@ -1,4 +1,4 @@
-use crate::{dot_product, Vector};
+use crate::{Vector, dot_product};
 use anyhow::anyhow;
 use std::fmt::{Debug, Formatter};
 use std::ops::{Add, AddAssign, Mul};
@@ -159,7 +159,7 @@ where
 
 #[cfg(test)]
 mod tests {
-    use crate::{multiply, Matrix};
+    use crate::{Matrix, multiply};
 
     #[test]
     fn test_matrix_multiply() -> anyhow::Result<()> {

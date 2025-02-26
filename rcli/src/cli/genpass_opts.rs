@@ -1,4 +1,4 @@
-use crate::{process_genpass, CmdExecutor};
+use crate::{CmdExecutor, process_genpass};
 use clap::Parser;
 use zxcvbn::zxcvbn;
 

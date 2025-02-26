@@ -1,5 +1,5 @@
 use super::verify_file;
-use crate::{process_decode_base64, process_encode_base64, CmdExecutor};
+use crate::{CmdExecutor, process_decode_base64, process_encode_base64};
 use clap::Parser;
 use std::fmt;
 use std::fmt::Formatter;

@@ -1,7 +1,7 @@
 use crate::cli::Base64Format;
 use crate::get_reader;
-use base64::engine::general_purpose;
 use base64::Engine;
+use base64::engine::general_purpose;
 use std::io::Read;
 
 pub fn process_encode_base64(input: &str, format: Base64Format) -> anyhow::Result<String> {

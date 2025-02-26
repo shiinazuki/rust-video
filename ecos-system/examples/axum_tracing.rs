@@ -1,22 +1,22 @@
 use std::time::Duration;
 
 use axum::{
+    Router,
     extract::Request,
     response::{IntoResponse, Response},
     routing::get,
-    Router,
 };
 
 use tokio::{
     net::TcpListener,
-    time::{sleep, Instant},
+    time::{Instant, sleep},
 };
 use tracing::{debug, info, instrument, level_filters::LevelFilter, warn};
 use tracing_subscriber::{
+    Layer,
     fmt::{self, format::FmtSpan},
     layer::SubscriberExt,
     util::SubscriberInitExt,
-    Layer,
 };
 
 const ADDR: &str = "0.0.0.0:8012";

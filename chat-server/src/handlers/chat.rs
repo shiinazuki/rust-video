@@ -1,13 +1,13 @@
 use axum::{
+    Extension, Json,
     extract::{Path, State},
     response::IntoResponse,
-    Extension, Json,
 };
 use hyper::StatusCode;
 
 use crate::{
-    models::{CreateChat, UpdateChat},
     AppError, AppState,
+    models::{CreateChat, UpdateChat},
 };
 use chat_core::User;
 

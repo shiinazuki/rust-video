@@ -1,6 +1,6 @@
 use bytes::BytesMut;
 
-use super::{utils::extract_fixed_data, RespDecode, RespEncode, RespError};
+use super::{RespDecode, RespEncode, RespError, utils::extract_fixed_data};
 
 #[derive(Debug, Clone, PartialOrd, PartialEq)]
 pub struct RespNull;

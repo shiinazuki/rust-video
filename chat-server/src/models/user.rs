@@ -1,8 +1,8 @@
 use std::mem;
 
 use argon2::{
-    password_hash::{rand_core::OsRng, PasswordHasher, SaltString},
     Argon2, PasswordHash, PasswordVerifier,
+    password_hash::{PasswordHasher, SaltString, rand_core::OsRng},
 };
 use serde::{Deserialize, Serialize};
 
@@ -94,11 +94,7 @@ impl AppState {
                 let password_hash = mem::take(&mut user.password_hash);
                 let is_valid =
                     verify_passwor(&signin_user.password, &password_hash.unwrap_or_default())?;
-                if is_valid {
-                    Ok(Some(user))
-                } else {
-                    Ok(None)
-                }
+                if is_valid { Ok(Some(user)) } else { Ok(None) }
             }
             None => Ok(None),
         }

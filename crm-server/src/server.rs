@@ -1,7 +1,10 @@
 use anyhow::Result;
-use crm_server::pb::{user_service_server::{UserService, UserServiceServer}, CreateUserRequest, GetUserRequest, User};
+use crm_server::pb::{
+    CreateUserRequest, GetUserRequest, User,
+    user_service_server::{UserService, UserServiceServer},
+};
 use prost::Message;
-use tonic::{async_trait, transport::Server, Request, Response, Status};
+use tonic::{Request, Response, Status, async_trait, transport::Server};
 
 #[derive(Default)]
 pub struct UserServer {}

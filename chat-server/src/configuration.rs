@@ -15,7 +15,6 @@ pub struct AppConfig {
 
 impl AppConfig {}
 
-
 #[derive(Debug, Deserialize)]
 pub struct ApplicationConfig {
     #[serde(deserialize_with = "deserialize_number_from_string")]
@@ -70,7 +69,6 @@ impl RedisConfig {
         )))
     }
 }
-
 
 pub fn get_configuration() -> Result<AppConfig, config::ConfigError> {
     let base_path = std::env::current_dir().expect("Failed to determine the current directory");

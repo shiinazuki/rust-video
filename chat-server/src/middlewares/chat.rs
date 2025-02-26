@@ -32,7 +32,7 @@ pub async fn verify_chat(State(state): State<AppState>, req: Request, next: Next
 mod tests {
     use super::*;
     use anyhow::Result;
-    use axum::{body::Body, middleware::from_fn_with_state, routing::get, Router};
+    use axum::{Router, body::Body, middleware::from_fn_with_state, routing::get};
     use chat_core::verify_token;
     use hyper::StatusCode;
     use tower::ServiceExt;

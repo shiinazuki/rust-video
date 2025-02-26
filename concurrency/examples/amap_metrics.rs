@@ -1,5 +1,5 @@
 use concurrency::AmapMetrics;
-use rand::{thread_rng, Rng};
+use rand::{Rng, thread_rng};
 use std::thread;
 use std::time::Duration;
 

@@ -1,6 +1,6 @@
 use darling::{
-    ast::{Data, Fields, Style},
     FromDeriveInput, FromField, FromVariant,
+    ast::{Data, Fields, Style},
 };
 
 use proc_macro2::TokenStream;

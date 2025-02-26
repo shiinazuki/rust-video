@@ -1,5 +1,5 @@
 use anyhow::Result;
-use simple_redis::{network, Backend};
+use simple_redis::{Backend, network};
 use tokio::net::TcpListener;
 use tracing::{info, warn};
 

@@ -1,7 +1,7 @@
 use super::{verify_file, verify_path};
 use crate::{
-    process_text_decrypt, process_text_encrypt, process_text_generate, process_text_sign,
-    process_text_verify, CmdExecutor,
+    CmdExecutor, process_text_decrypt, process_text_encrypt, process_text_generate,
+    process_text_sign, process_text_verify,
 };
 use clap::Parser;
 use std::fmt;

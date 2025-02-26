@@ -1,4 +1,4 @@
-use anyhow::{anyhow, Result};
+use anyhow::{Result, anyhow};
 
 fn main() -> Result<()> {
     // let ret = f3(f2(f1("hello")?)?)?;

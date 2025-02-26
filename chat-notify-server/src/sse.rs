@@ -1,14 +1,14 @@
 use std::{convert::Infallible, time::Duration};
 
 use axum::{
+    Extension,
     extract::State,
     response::sse::{Event, Sse},
-    Extension,
 };
 use chat_core::User;
 use futures::Stream;
 use tokio::sync::broadcast;
-use tokio_stream::{wrappers::BroadcastStream, StreamExt};
+use tokio_stream::{StreamExt, wrappers::BroadcastStream};
 use tracing::info;
 
 use crate::{AppEvent, AppState};

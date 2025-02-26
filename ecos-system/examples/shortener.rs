@@ -2,20 +2,20 @@ use std::sync::Arc;
 
 use anyhow::Result;
 use axum::{
+    Json,
     extract::{Path, State},
     response::IntoResponse,
     routing::{get, post},
-    Json,
 };
-use ecos_system::{get_configuration, ApplicationSettings};
-use http::{header::LOCATION, HeaderMap, StatusCode};
+use ecos_system::{ApplicationSettings, get_configuration};
+use http::{HeaderMap, StatusCode, header::LOCATION};
 use nanoid::nanoid;
 use secrecy::ExposeSecret;
 use serde::{Deserialize, Serialize};
 use sqlx::{FromRow, PgPool};
 use tokio::net::TcpListener;
 use tracing::{info, level_filters::LevelFilter};
-use tracing_subscriber::{fmt::Layer, layer::SubscriberExt, util::SubscriberInitExt, Layer as _};
+use tracing_subscriber::{Layer as _, fmt::Layer, layer::SubscriberExt, util::SubscriberInitExt};
 
 #[derive(Debug, Serialize, Deserialize)]
 struct ShortenReq {

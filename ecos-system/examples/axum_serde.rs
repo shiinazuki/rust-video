@@ -2,16 +2,16 @@ use std::sync::{Arc, Mutex};
 
 use anyhow::Result;
 use axum::{
+    Json,
     extract::State,
     routing::{get, patch},
-    Json,
 };
 use chrono::{DateTime, Utc};
 use derive_builder::Builder;
 use serde::{Deserialize, Serialize};
 use tokio::net::TcpListener;
 use tracing::{info, level_filters::LevelFilter};
-use tracing_subscriber::{fmt, layer::SubscriberExt, util::SubscriberInitExt, Layer};
+use tracing_subscriber::{Layer, fmt, layer::SubscriberExt, util::SubscriberInitExt};
 
 #[derive(Debug, PartialEq, Clone, Builder, Serialize, Deserialize)]
 #[builder(pattern = "owned")]
@@ -44,8 +44,6 @@ struct UserUpdate {
     #[builder(setter(each(name = "skill", into), strip_option))]
     skills: Option<Vec<String>>,
 }
-
-
 
 const ADDR: &str = "127.0.0.1:8891";
 

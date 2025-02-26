@@ -58,7 +58,6 @@ pub fn get_configuration() -> Result<AppConfig, config::ConfigError> {
     Ok(app_config)
 }
 
-
 #[cfg(test)]
 pub fn get_configuration_test() -> Result<AppConfig, config::ConfigError> {
     let base_path = std::env::current_dir().expect("Failed to determine the current directory");
@@ -75,7 +74,6 @@ pub fn get_configuration_test() -> Result<AppConfig, config::ConfigError> {
     let app_config = configs.try_deserialize::<AppConfig>()?;
     Ok(app_config)
 }
-
 
 fn deserialize_number_from_string<'de, D, T>(deserializer: D) -> Result<T, D::Error>
 where

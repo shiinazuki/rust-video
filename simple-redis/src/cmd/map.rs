@@ -1,5 +1,5 @@
 use crate::cmd::{
-    extract_args, validate_command, CommandError, CommandExecutor, GetCommand, SetCommand, RESP_OK,
+    CommandError, CommandExecutor, GetCommand, RESP_OK, SetCommand, extract_args, validate_command,
 };
 use crate::{Backend, RespArray, RespFrame, RespNull};
 

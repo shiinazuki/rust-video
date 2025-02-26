@@ -3,8 +3,8 @@ use std::ops::Deref;
 use bytes::{Buf, BytesMut};
 
 use super::{
+    CRLF_LEN, RespDecode, RespEncode, RespError,
     utils::{extract_fixed_data, parse_length},
-    RespDecode, RespEncode, RespError, CRLF_LEN,
 };
 
 #[derive(Debug, Clone, PartialOrd, PartialEq)]

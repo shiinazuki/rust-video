@@ -1,6 +1,7 @@
 use darling::{
+    FromDeriveInput, FromVariant,
     ast::{Data, Fields, Style},
-    util, FromDeriveInput, FromVariant,
+    util,
 };
 use proc_macro2::TokenStream;
 use quote::quote;

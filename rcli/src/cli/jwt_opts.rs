@@ -1,5 +1,5 @@
 use super::verify_file;
-use crate::{process_jwt_sign, process_jwt_verify, CmdExecutor};
+use crate::{CmdExecutor, process_jwt_sign, process_jwt_verify};
 use clap::Parser;
 
 #[derive(Debug, Parser)]

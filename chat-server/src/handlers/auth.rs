@@ -1,10 +1,10 @@
-use axum::{extract::State, http::StatusCode, response::IntoResponse, Json};
+use axum::{Json, extract::State, http::StatusCode, response::IntoResponse};
 // use redis::Commands;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    models::{CreateUser, SigninUser},
     AppError, AppState, ErrorOutput,
+    models::{CreateUser, SigninUser},
 };
 
 // const REDIS_EX_TIME: u64 = 60 * 60 * 24 * 3;

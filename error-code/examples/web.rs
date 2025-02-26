@@ -1,7 +1,7 @@
 use axum::{
+    Router,
     response::{IntoResponse, Response},
     routing::get,
-    Router,
 };
 use backtrace::Backtrace;
 use error_code::ToErrorInfo;
@@ -9,7 +9,6 @@ use http::StatusCode;
 use thiserror::Error;
 use tokio::net::TcpListener;
 use tracing::{info, warn};
-
 
 #[allow(unused)]
 #[derive(Debug, Error, ToErrorInfo)]
@@ -35,7 +34,6 @@ enum AppError {
     #[error_info(code = "UE", app_code = "500")]
     Unknown,
 }
-
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {

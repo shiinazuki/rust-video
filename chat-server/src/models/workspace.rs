@@ -90,7 +90,9 @@ mod tests {
 
         assert_eq!(user.ws_id, ws.id);
 
-        let ws = state.update_workspace_owner(ws.id as u64, user.id as u64).await?;
+        let ws = state
+            .update_workspace_owner(ws.id as u64, user.id as u64)
+            .await?;
         assert_eq!(ws.owner_id, user.id);
 
         Ok(())

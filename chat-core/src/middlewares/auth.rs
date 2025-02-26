@@ -4,8 +4,8 @@ use axum::{
     response::{IntoResponse, Response},
 };
 use axum_extra::{
-    headers::{authorization::Bearer, Authorization},
     TypedHeader,
+    headers::{Authorization, authorization::Bearer},
 };
 use hyper::StatusCode;
 use serde::Deserialize;
@@ -67,7 +67,7 @@ mod tests {
     use super::*;
     use crate::{ChatDecodingKey, ChatEncodingKey, User};
     use anyhow::Result;
-    use axum::{body::Body, middleware::from_fn_with_state, routing::get, Router};
+    use axum::{Router, body::Body, middleware::from_fn_with_state, routing::get};
     use tower::ServiceExt;
 
     #[derive(Clone)]

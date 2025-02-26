@@ -6,7 +6,7 @@ use std::fmt;
 
 pub use auth::verify_token;
 
-use axum::{middleware::from_fn, Router};
+use axum::{Router, middleware::from_fn};
 use server_time::ServerTimeLayer;
 use tower::ServiceBuilder;
 use tower_http::{compression::CompressionLayer, trace::TraceLayer};
@@ -22,7 +22,6 @@ pub trait TokenVerify {
     type Error: fmt::Debug;
     fn verify(&self, token: &str) -> Result<User, Self::Error>;
 }
-
 
 pub fn set_layers(app: Router) -> Router {
     app.layer(

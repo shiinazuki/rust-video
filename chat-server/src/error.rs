@@ -1,4 +1,4 @@
-use axum::{http::StatusCode, response::IntoResponse, Json};
+use axum::{Json, http::StatusCode, response::IntoResponse};
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
@@ -37,7 +37,7 @@ pub enum AppError {
 
     #[error("")]
     CreateMessageError(String),
-    
+
     #[error("{0}")]
     ChatFileError(String),
 
@@ -69,7 +69,7 @@ impl IntoResponse for AppError {
             AppError::ChatPemError(_) => StatusCode::INTERNAL_SERVER_ERROR,
             AppError::CreateChatError(_) => StatusCode::BAD_REQUEST,
             AppError::CreateMessageError(_) => StatusCode::BAD_REQUEST,
-            AppError::ChatFileError(_) =>  StatusCode::BAD_REQUEST,
+            AppError::ChatFileError(_) => StatusCode::BAD_REQUEST,
             AppError::NotFound(_) => StatusCode::NOT_FOUND,
             AppError::ChatMultipartError(_) => StatusCode::INTERNAL_SERVER_ERROR,
             AppError::AnyError(_) => StatusCode::INTERNAL_SERVER_ERROR,

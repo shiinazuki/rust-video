@@ -5,17 +5,17 @@ mod middlewares;
 mod models;
 
 use anyhow::Context;
-use chat_core::{set_layers, verify_token, ChatDecodingKey, ChatEncodingKey, TokenVerify};
 pub use chat_core::{Chat, User};
-pub use configuration::{get_configuration, AppConfig};
+use chat_core::{ChatDecodingKey, ChatEncodingKey, TokenVerify, set_layers, verify_token};
+pub use configuration::{AppConfig, get_configuration};
 pub use error::{AppError, ErrorOutput};
 use handlers::*;
 use middlewares::verify_chat;
 
 use axum::{
+    Router,
     middleware::from_fn_with_state,
     routing::{get, post},
-    Router,
 };
 // use r2d2::Pool;
 // use redis::Client;

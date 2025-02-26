@@ -1,8 +1,8 @@
+use axum::Router;
 use axum::extract::{Path, State};
 use axum::http::StatusCode;
 use axum::response::{Html, IntoResponse};
 use axum::routing::get;
-use axum::Router;
 use std::path::PathBuf;
 use std::sync::Arc;
 use tokio::net::TcpListener;

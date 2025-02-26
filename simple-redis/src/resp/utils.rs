@@ -1,6 +1,6 @@
 use bytes::{Buf, BytesMut};
 
-use super::{RespDecode, RespError, RespFrame, SimpleString, CRLF_LEN};
+use super::{CRLF_LEN, RespDecode, RespError, RespFrame, SimpleString};
 
 pub fn extract_simple_frame_data(buf: &[u8], prefix: &str) -> Result<usize, RespError> {
     if buf.len() < 3 {

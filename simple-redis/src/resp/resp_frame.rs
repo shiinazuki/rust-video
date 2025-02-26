@@ -2,6 +2,7 @@ use bytes::BytesMut;
 use enum_dispatch::enum_dispatch;
 
 use super::{
+    RespDecode, RespEncode, RespError,
     array::{RespArray, RespNullArray},
     bulk_string::{BulkString, RespNullBulkString},
     map::RespMap,
@@ -9,7 +10,6 @@ use super::{
     set::RespSet,
     simple_error::SimpleError,
     simple_string::SimpleString,
-    RespDecode, RespEncode, RespError,
 };
 
 #[enum_dispatch(RespEncode)]

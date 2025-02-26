@@ -1,8 +1,8 @@
-mod utils;
 mod middlewares;
+mod utils;
 
-pub use utils::*;
 pub use middlewares::*;
+pub use utils::*;
 
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
@@ -64,8 +64,6 @@ pub struct Message {
     pub files: Vec<String>,
     pub created_at: DateTime<Utc>,
 }
-
-
 
 #[cfg(test)]
 impl User {

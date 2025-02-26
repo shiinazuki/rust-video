@@ -1,11 +1,10 @@
-use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine};
+use base64::{Engine, engine::general_purpose::URL_SAFE_NO_PAD};
 pub use error_code_derive::ToErrorInfo;
 use std::{
     fmt,
     hash::{DefaultHasher, Hash, Hasher},
     str::FromStr,
 };
-
 
 pub trait ToErrorInfo {
     type T: FromStr;
@@ -67,4 +66,3 @@ impl<T> fmt::Debug for ErrorInfo<T> {
         write!(f, "[{}-{}] {}", self.code, self.hash, self.server_msg)
     }
 }
-

@@ -1,7 +1,7 @@
 use crate::cli::TextSignFormat;
 use crate::{get_reader, process_genpass};
-use base64::engine::general_purpose;
 use base64::Engine;
+use base64::engine::general_purpose;
 use chacha20poly1305::aead::Aead;
 use chacha20poly1305::{ChaCha20Poly1305, Key, KeyInit, Nonce};
 use ed25519_dalek::{Signature, Signer, SigningKey, Verifier, VerifyingKey};

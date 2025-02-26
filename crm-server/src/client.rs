@@ -1,5 +1,5 @@
 use anyhow::Result;
-use crm_server::pb::{user_service_client::UserServiceClient, CreateUserRequest};
+use crm_server::pb::{CreateUserRequest, user_service_client::UserServiceClient};
 use tonic::Request;
 
 #[tokio::main]
@@ -10,7 +10,7 @@ async fn main() -> Result<()> {
         name: "shiina".into(),
         email: "shiina@acme.org".into(),
     });
-    
+
     let response = client.create_user(request).await?;
     println!("response={:#?}", response);
     let user = response.into_inner();

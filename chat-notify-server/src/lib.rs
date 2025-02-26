@@ -5,17 +5,17 @@ mod sse;
 
 use std::{ops::Deref, sync::Arc};
 
-pub use configuration::{get_configuration, AppConfig};
+pub use configuration::{AppConfig, get_configuration};
 pub use error::AppError;
-pub use notif::{setup_pg_listener, AppEvent};
+pub use notif::{AppEvent, setup_pg_listener};
 
 use anyhow::Result;
 use axum::{
     middleware::from_fn_with_state,
     response::{Html, IntoResponse},
-    routing::{get, Router},
+    routing::{Router, get},
 };
-use chat_core::{verify_token, ChatDecodingKey, TokenVerify, User};
+use chat_core::{ChatDecodingKey, TokenVerify, User, verify_token};
 use dashmap::DashMap;
 use secrecy::ExposeSecret;
 use sse::sse_handler;

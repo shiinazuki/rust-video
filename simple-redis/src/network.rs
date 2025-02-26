@@ -1,6 +1,6 @@
 use crate::{
-    cmd::{Command, CommandExecutor},
     Backend, RespDecode, RespEncode, RespError, RespFrame,
+    cmd::{Command, CommandExecutor},
 };
 use anyhow::Result;
 use bytes::BytesMut;

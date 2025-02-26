@@ -1,7 +1,5 @@
 use error_code::ToErrorInfo;
 
-
-
 #[derive(Debug, thiserror::Error, ToErrorInfo)]
 #[error_info(app_type = "http::StatusCode", prefix = "01")]
 pub enum MyError {

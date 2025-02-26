@@ -1,6 +1,6 @@
 use crate::cmd::{
-    extract_args, validate_command, CommandError, CommandExecutor, HGetAllCommand, HGetCommand,
-    HSetCommand, RESP_OK,
+    CommandError, CommandExecutor, HGetAllCommand, HGetCommand, HSetCommand, RESP_OK, extract_args,
+    validate_command,
 };
 use crate::{Backend, BulkString, RespArray, RespFrame, RespNull};
 

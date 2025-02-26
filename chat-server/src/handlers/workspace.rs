@@ -1,4 +1,4 @@
-use axum::{extract::State, response::IntoResponse, Extension, Json};
+use axum::{Extension, Json, extract::State, response::IntoResponse};
 
 use crate::{AppError, AppState};
 use chat_core::User;

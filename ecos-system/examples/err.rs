@@ -19,7 +19,6 @@ pub enum MyError {
     Serialize(#[from] serde_json::Error),
 }
 
-
 fn main() -> Result<(), anyhow::Error> {
     println!("size of MyError is {}", std::mem::size_of::<MyError>());
     let filename = "D:/settingsa.json";

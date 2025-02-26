@@ -1,6 +1,6 @@
 use crate::User;
 use chrono::Utc;
-use jsonwebtoken::{decode, encode, Algorithm, DecodingKey, EncodingKey, Validation};
+use jsonwebtoken::{Algorithm, DecodingKey, EncodingKey, Validation, decode, encode};
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 

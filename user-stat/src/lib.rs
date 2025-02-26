@@ -4,7 +4,7 @@ pub mod pb;
 
 pub use configuration::{AppConfig, get_configuration};
 use secrecy::ExposeSecret;
-use sqlx::{PgPool, query};
+use sqlx::PgPool;
 
 use std::{ops::Deref, pin::Pin, sync::Arc};
 
@@ -25,6 +25,7 @@ pub struct UserStatsService {
     inner: Arc<UserStatsServiceInner>,
 }
 
+#[allow(unused)]
 pub struct UserStatsServiceInner {
     config: AppConfig,
     pool: PgPool,
