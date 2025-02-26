@@ -2,6 +2,7 @@ use std::{collections::HashSet, hash::Hash};
 
 use anyhow::Result;
 use chrono::{DateTime, Days, Utc};
+use crm_user_stat::get_configuration;
 use fake::{
     Dummy, Fake, Faker,
     faker::{chrono::en::DateTimeBetween, internet::en::SafeEmail, name::zh_cn::Name},
@@ -12,7 +13,6 @@ use secrecy::ExposeSecret;
 use serde::{Deserialize, Serialize};
 use sqlx::{Executor, PgPool};
 use tokio::time::Instant;
-use user_stat::get_configuration;
 
 #[tokio::main]
 async fn main() -> Result<()> {

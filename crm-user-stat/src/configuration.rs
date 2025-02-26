@@ -44,7 +44,7 @@ impl DatabaseConfig {
 
 pub fn get_configuration() -> Result<AppConfig, config::ConfigError> {
     let base_path = std::env::current_dir().expect("Failed to determine the current directory");
-    let configuration_directory = base_path.join("user-stat").join("configuration");
+    let configuration_directory = base_path.join("crm-user-stat").join("configuration");
     let env_filename = std::env::var("APP_ENVIRONMENT").unwrap_or_else(|_| "local".into());
     let configuration_directory = configuration_directory.join(env_filename);
 
