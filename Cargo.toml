@@ -22,3 +22,6 @@ error-code-derive = { path = "./error-code-derive" }
 chat-core = { path = "./chat-core" }
 chat-server = { path = "./chat-server" }
 chat-notify-server = { path = "./chat-notify-server" }
+crm-user-stat = { path = "./crm-user-stat" }
+crm-metadata = { path = "./crm-metadata" }
+crm-send = { path = "./crm-send" }

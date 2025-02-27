@@ -58,7 +58,7 @@ pub fn get_configuration() -> Result<AppConfig, config::ConfigError> {
     Ok(app_config)
 }
 
-#[cfg(test)]
+#[cfg(feature = "test_utils")]
 pub fn get_configuration_test() -> Result<AppConfig, config::ConfigError> {
     let base_path = std::env::current_dir().expect("Failed to determine the current directory");
     let configuration_directory = base_path.join("configuration");

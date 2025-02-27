@@ -34,7 +34,7 @@ impl From<EmailMessage> for SendRequest {
     }
 }
 
-#[cfg(test)]
+#[cfg(feature = "test_utils")]
 impl EmailMessage {
     pub fn fake() -> Self {
         use fake::{Fake, faker::internet::en::SafeEmail};

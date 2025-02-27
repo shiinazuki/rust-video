@@ -98,8 +98,7 @@ mod test_util {
 
         let db_url = match db_url {
             Some(v) => v.to_string(),
-            None => "postgres://shiina:shiina%40^%40%29^%25%28%26%25@74.211.109.216:36594/chat"
-                .to_string(),
+            None => "postgres://postgres:postgres@127.0.0.1:5432/chat".to_string(),
         };
         let tdb = TestPg::new(db_url, std::path::Path::new("../migrations"));
         let pool = tdb.get_pool().await;

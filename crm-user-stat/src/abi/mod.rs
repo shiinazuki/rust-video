@@ -84,7 +84,10 @@ fn ts_to_utc(ts: Timestamp) -> DateTime<Utc> {
 
 #[cfg(test)]
 mod tests {
-    use crate::pb::{IdQuery, QueryRequestBuilder, TimeQuery};
+    use crate::{
+        pb::QueryRequestBuilder,
+        test_utils::{id, tq},
+    };
 
     use super::*;
     use anyhow::Result;
@@ -92,7 +95,7 @@ mod tests {
 
     #[tokio::test]
     async fn raw_query_should_word() -> Result<()> {
-        let svc = UserStatsService::new_test().await;
+        let (_tdb, svc) = UserStatsService::new_for_test().await?;
         let mut stream = svc
             .raw_query(RawQueryRequest {
                 query:
@@ -111,38 +114,17 @@ mod tests {
 
     #[tokio::test]
     async fn query_should_work() -> Result<()> {
-        let svc = UserStatsService::new_test().await;
+        let (_tdb, svc) = UserStatsService::new_for_test().await?;
         let query = QueryRequestBuilder::default()
             .timestamp(("created_at".to_string(), tq(None, Some(120))))
             .timestamp(("last_visited_at".to_string(), tq(Some(30), None)))
             .id(("viewed_but_not_started".to_string(), id(&[23054])))
-            .build()
-            .unwrap();
+            .build()?;
+
         let mut stream = svc.query(query).await?.into_inner();
         while let Some(res) = stream.next().await {
             println!("{:?}", res);
         }
         Ok(())
-    }
-
-    fn to_ts(days: i64) -> Timestamp {
-        let dt = Utc::now()
-            .checked_sub_signed(chrono::Duration::days(days))
-            .unwrap();
-        Timestamp {
-            seconds: dt.timestamp(),
-            nanos: dt.timestamp_subsec_nanos() as i32,
-        }
-    }
-
-    fn tq(upper: Option<i64>, lower: Option<i64>) -> TimeQuery {
-        TimeQuery {
-            upper: upper.map(to_ts),
-            lower: lower.map(to_ts),
-        }
-    }
-
-    fn id(id: &[u32]) -> IdQuery {
-        IdQuery { ids: id.to_vec() }
     }
 }

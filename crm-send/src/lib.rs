@@ -1,7 +1,7 @@
 mod abi;
 mod configuration;
 pub mod pb;
-pub use configuration::{AppConfig, get_configuration};
+pub use configuration::{AppConfig, get_configuration, get_configuration_test};
 use std::{pin::Pin, sync::Arc};
 use tokio::sync::mpsc;
 

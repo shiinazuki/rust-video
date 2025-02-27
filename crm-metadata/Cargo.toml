@@ -3,6 +3,10 @@ name = "crm-metadata"
 version = "0.1.0"
 edition = "2024"
 
+[features]
+default = []
+test_utils = []
+
 [dependencies]
 anyhow = "1.0.95"
 config = "0.15.6"
@@ -26,3 +30,6 @@ tokio-stream = "0.1.17"
 anyhow = "1.0.95"
 proto-builder-trait = "0.6.2"
 tonic-build = "0.12.3"
+
+[dev-dependencies]
+crm-metadata = { workspace = true, features = ["test_utils"]}

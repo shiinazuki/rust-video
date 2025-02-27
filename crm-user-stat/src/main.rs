@@ -1,8 +1,8 @@
 use anyhow::Result;
+use crm_user_stat::{UserStatsService, get_configuration};
 use tonic::transport::Server;
 use tracing::{info, level_filters::LevelFilter};
 use tracing_subscriber::{Layer as _, fmt::Layer, layer::SubscriberExt, util::SubscriberInitExt};
-use crm_user_stat::{UserStatsService, get_configuration};
 
 #[tokio::main]
 async fn main() -> Result<()> {
