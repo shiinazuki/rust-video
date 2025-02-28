@@ -4,7 +4,9 @@ pub mod pb;
 
 use std::pin::Pin;
 
+pub use abi::Template;
 pub use configuration::{AppConfig, get_configuration, get_configuration_test};
+
 use futures::Stream;
 use pb::{
     Content, MaterializeRequest,

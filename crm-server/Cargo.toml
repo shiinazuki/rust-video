@@ -13,15 +13,25 @@ path = "src/client.rs"
 
 [dependencies]
 anyhow = "1.0.95"
+config = "0.15.6"
+chrono = { version = "0.4.39", features = ["serde"] }
+crm-user-stat = { workspace = true, features = ["test_utils"] }
+crm-metadata = { workspace = true, features = ["test_utils"] }
+crm-send = { workspace = true, features = ["test_utils"] }
+derive_builder = "0.20.2"
 prost = "0.13.5"
 prost-types = "0.13.5"
+serde = { version = "1.0.218", features = ["derive"] }
 tokio = { version = "1.43.0", features = ["rt", "rt-multi-thread", "macros"] }
 tonic = { version = "0.12.3", features = ["zstd", "tls"] }
 tracing = "0.1.41"
 tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
+futures = "0.3.31"
+uuid = { version = "1.15.1", features = ["v4"] }
+tokio-stream = "0.1.17"
 
 
 [build-dependencies]
 anyhow = "1.0.95"
-prost-build = "0.13.5"
+proto-builder-trait = "0.6.2"
 tonic-build = "0.12.3"

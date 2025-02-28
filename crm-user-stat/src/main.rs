@@ -13,7 +13,7 @@ async fn main() -> Result<()> {
     let addr = format!("{}:{}", config.application.host, config.application.port)
         .parse()
         .unwrap();
-    info!("UserServce ligtening on {}", addr);
+    info!("User Stats Servce ligtening on {}", addr);
 
     let svc = UserStatsService::new(config).await.into_server();
     Server::builder().add_service(svc).serve(addr).await?;

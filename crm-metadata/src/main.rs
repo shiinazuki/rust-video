@@ -13,7 +13,7 @@ async fn main() -> Result<()> {
     let addr = format!("{}:{}", config.application.host, config.application.port)
         .parse()
         .unwrap();
-    info!("UserServce ligtening on {}", addr);
+    info!("Metadata Servce ligtening on {}", addr);
 
     let svc = MetadataService::new(config).into_server();
     Server::builder().add_service(svc).serve(addr).await?;
