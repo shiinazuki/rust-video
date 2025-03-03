@@ -12,7 +12,7 @@ members = [
     "simple-redis",
     "chat-test",
     "crm-server",
-    "crm-user-stat", "crm-metadata", "crm-send",
+    "crm-user-stat", "crm-metadata", "crm-send", "taotie",
 ]
 resolver = "2"
 
