@@ -1,5 +1,5 @@
 /target
-*.lock
+Cargo.lock
 /**/tmp
 /**/**/base.yaml
 *.env
