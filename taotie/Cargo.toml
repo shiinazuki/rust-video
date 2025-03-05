@@ -15,3 +15,4 @@ polars = { version = "0.46.0", features = ["parquet", "timezones", "sql", "lazy"
 tokio = { version = "1.43.0", features = ["rt", "rt-multi-thread", "macros"] }
 clap = { version = "4.5.31", features = ["derive"] }
 reedline-repl-rs = { version = "1.2.1", features = ["derive"] }
+crossbeam-channel = "0.5.14"
