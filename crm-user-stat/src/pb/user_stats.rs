@@ -3,8 +3,7 @@
 #[serde(rename_all = "camelCase")]
 #[derive(derive_builder::Builder)]
 #[builder(setter(into, strip_option), default)]
-#[derive(sqlx::FromRow)]
-#[derive(Clone, PartialEq, ::prost::Message)]
+#[derive(sqlx::FromRow, Clone, PartialEq, ::prost::Message)]
 pub struct User {
     #[prost(string, tag = "1")]
     #[builder(setter(into))]
@@ -20,10 +19,7 @@ pub struct QueryRequest {
     /// created_at, last_visited_at, ..
     #[prost(map = "string, message", tag = "1")]
     #[builder(setter(each(name = "timestamp", into)))]
-    pub timestamps: ::std::collections::HashMap<
-        ::prost::alloc::string::String,
-        TimeQuery,
-    >,
+    pub timestamps: ::std::collections::HashMap<::prost::alloc::string::String, TimeQuery>,
     #[prost(map = "string, message", tag = "2")]
     #[builder(setter(each(name = "id", into)))]
     pub ids: ::std::collections::HashMap<::prost::alloc::string::String, IdQuery>,
@@ -59,10 +55,10 @@ pub mod user_stats_client {
         dead_code,
         missing_docs,
         clippy::wildcard_imports,
-        clippy::let_unit_value,
+        clippy::let_unit_value
     )]
-    use tonic::codegen::*;
     use tonic::codegen::http::Uri;
+    use tonic::codegen::*;
     #[derive(Debug, Clone)]
     pub struct UserStatsClient<T> {
         inner: tonic::client::Grpc<T>,
@@ -101,14 +97,13 @@ pub mod user_stats_client {
             F: tonic::service::Interceptor,
             T::ResponseBody: Default,
             T: tonic::codegen::Service<
-                http::Request<tonic::body::BoxBody>,
-                Response = http::Response<
-                    <T as tonic::client::GrpcService<tonic::body::BoxBody>>::ResponseBody,
+                    http::Request<tonic::body::BoxBody>,
+                    Response = http::Response<
+                        <T as tonic::client::GrpcService<tonic::body::BoxBody>>::ResponseBody,
+                    >,
                 >,
-            >,
-            <T as tonic::codegen::Service<
-                http::Request<tonic::body::BoxBody>,
-            >>::Error: Into<StdError> + std::marker::Send + std::marker::Sync,
+            <T as tonic::codegen::Service<http::Request<tonic::body::BoxBody>>>::Error:
+                Into<StdError> + std::marker::Send + std::marker::Sync,
         {
             UserStatsClient::new(InterceptedService::new(inner, interceptor))
         }
@@ -146,22 +141,13 @@ pub mod user_stats_client {
         pub async fn query(
             &mut self,
             request: impl tonic::IntoRequest<super::QueryRequest>,
-        ) -> std::result::Result<
-            tonic::Response<tonic::codec::Streaming<super::User>>,
-            tonic::Status,
-        > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::unknown(
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+        ) -> std::result::Result<tonic::Response<tonic::codec::Streaming<super::User>>, tonic::Status>
+        {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
+            })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/user_stats.UserStats/Query",
-            );
+            let path = http::uri::PathAndQuery::from_static("/user_stats.UserStats/Query");
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("user_stats.UserStats", "Query"));
@@ -170,22 +156,13 @@ pub mod user_stats_client {
         pub async fn raw_query(
             &mut self,
             request: impl tonic::IntoRequest<super::RawQueryRequest>,
-        ) -> std::result::Result<
-            tonic::Response<tonic::codec::Streaming<super::User>>,
-            tonic::Status,
-        > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::unknown(
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+        ) -> std::result::Result<tonic::Response<tonic::codec::Streaming<super::User>>, tonic::Status>
+        {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
+            })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/user_stats.UserStats/RawQuery",
-            );
+            let path = http::uri::PathAndQuery::from_static("/user_stats.UserStats/RawQuery");
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("user_stats.UserStats", "RawQuery"));
@@ -200,7 +177,7 @@ pub mod user_stats_server {
         dead_code,
         missing_docs,
         clippy::wildcard_imports,
-        clippy::let_unit_value,
+        clippy::let_unit_value
     )]
     use tonic::codegen::*;
     /// Generated trait containing gRPC methods that should be implemented for use with UserStatsServer.
@@ -209,8 +186,7 @@ pub mod user_stats_server {
         /// Server streaming response type for the Query method.
         type QueryStream: tonic::codegen::tokio_stream::Stream<
                 Item = std::result::Result<super::User, tonic::Status>,
-            >
-            + std::marker::Send
+            > + std::marker::Send
             + 'static;
         async fn query(
             &self,
@@ -219,8 +195,7 @@ pub mod user_stats_server {
         /// Server streaming response type for the RawQuery method.
         type RawQueryStream: tonic::codegen::tokio_stream::Stream<
                 Item = std::result::Result<super::User, tonic::Status>,
-            >
-            + std::marker::Send
+            > + std::marker::Send
             + 'static;
         async fn raw_query(
             &self,
@@ -248,10 +223,7 @@ pub mod user_stats_server {
                 max_encoding_message_size: None,
             }
         }
-        pub fn with_interceptor<F>(
-            inner: T,
-            interceptor: F,
-        ) -> InterceptedService<Self, F>
+        pub fn with_interceptor<F>(inner: T, interceptor: F) -> InterceptedService<Self, F>
         where
             F: tonic::service::Interceptor,
         {
@@ -306,24 +278,17 @@ pub mod user_stats_server {
                 "/user_stats.UserStats/Query" => {
                     #[allow(non_camel_case_types)]
                     struct QuerySvc<T: UserStats>(pub Arc<T>);
-                    impl<
-                        T: UserStats,
-                    > tonic::server::ServerStreamingService<super::QueryRequest>
-                    for QuerySvc<T> {
+                    impl<T: UserStats> tonic::server::ServerStreamingService<super::QueryRequest> for QuerySvc<T> {
                         type Response = super::User;
                         type ResponseStream = T::QueryStream;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::ResponseStream>,
-                            tonic::Status,
-                        >;
+                        type Future =
+                            BoxFuture<tonic::Response<Self::ResponseStream>, tonic::Status>;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::QueryRequest>,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
-                            let fut = async move {
-                                <T as UserStats>::query(&inner, request).await
-                            };
+                            let fut = async move { <T as UserStats>::query(&inner, request).await };
                             Box::pin(fut)
                         }
                     }
@@ -352,24 +317,20 @@ pub mod user_stats_server {
                 "/user_stats.UserStats/RawQuery" => {
                     #[allow(non_camel_case_types)]
                     struct RawQuerySvc<T: UserStats>(pub Arc<T>);
-                    impl<
-                        T: UserStats,
-                    > tonic::server::ServerStreamingService<super::RawQueryRequest>
-                    for RawQuerySvc<T> {
+                    impl<T: UserStats> tonic::server::ServerStreamingService<super::RawQueryRequest>
+                        for RawQuerySvc<T>
+                    {
                         type Response = super::User;
                         type ResponseStream = T::RawQueryStream;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::ResponseStream>,
-                            tonic::Status,
-                        >;
+                        type Future =
+                            BoxFuture<tonic::Response<Self::ResponseStream>, tonic::Status>;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::RawQueryRequest>,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
-                            let fut = async move {
-                                <T as UserStats>::raw_query(&inner, request).await
-                            };
+                            let fut =
+                                async move { <T as UserStats>::raw_query(&inner, request).await };
                             Box::pin(fut)
                         }
                     }
@@ -395,23 +356,19 @@ pub mod user_stats_server {
                     };
                     Box::pin(fut)
                 }
-                _ => {
-                    Box::pin(async move {
-                        let mut response = http::Response::new(empty_body());
-                        let headers = response.headers_mut();
-                        headers
-                            .insert(
-                                tonic::Status::GRPC_STATUS,
-                                (tonic::Code::Unimplemented as i32).into(),
-                            );
-                        headers
-                            .insert(
-                                http::header::CONTENT_TYPE,
-                                tonic::metadata::GRPC_CONTENT_TYPE,
-                            );
-                        Ok(response)
-                    })
-                }
+                _ => Box::pin(async move {
+                    let mut response = http::Response::new(empty_body());
+                    let headers = response.headers_mut();
+                    headers.insert(
+                        tonic::Status::GRPC_STATUS,
+                        (tonic::Code::Unimplemented as i32).into(),
+                    );
+                    headers.insert(
+                        http::header::CONTENT_TYPE,
+                        tonic::metadata::GRPC_CONTENT_TYPE,
+                    );
+                    Ok(response)
+                }),
             }
         }
     }

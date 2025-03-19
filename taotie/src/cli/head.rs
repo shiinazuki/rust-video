@@ -1,12 +1,12 @@
 use clap::{ArgMatches, Parser};
 
-use crate::ReplContext;
+use crate::{Backend, CmdExector, ReplContext, ReplDisplay};
 
-use super::{ReplCommand, ReplResult};
+use super::ReplResult;
 
 #[derive(Debug, Parser)]
 pub struct HeadOpts {
-    #[arg(long, help = "The name of the dataset")]
+    #[arg(help = "The name of the dataset")]
     pub name: String,
 
     #[arg(long, help = "The number of rows to show")]
@@ -19,11 +19,19 @@ impl HeadOpts {
     }
 }
 
-impl From<HeadOpts> for ReplCommand {
-    fn from(value: HeadOpts) -> Self {
-        ReplCommand::Head(value)
+impl CmdExector for HeadOpts {
+    async fn execute<T: Backend>(self, backend: &mut T) -> anyhow::Result<()> {
+        let df = backend.head(&self.name, self.n.unwrap_or(5)).await?;
+        df.display().await?;
+        Ok(())
     }
 }
+
+// impl From<HeadOpts> for ReplCommand {
+//     fn from(value: HeadOpts) -> Self {
+//         ReplCommand::Head(value)
+//     }
+// }
 
 pub fn head(args: ArgMatches, ctx: &mut ReplContext) -> ReplResult {
     let name = args

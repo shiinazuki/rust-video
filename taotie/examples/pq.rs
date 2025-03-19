@@ -62,7 +62,6 @@ async fn read_with_datafusion(file: &str) -> Result<()> {
 fn read_with_polars(file: &str) -> Result<()> {
     // let file = File::open(file).unwrap();
     // let df = ParquetReader::new(file).finish()?;
-    
 
     let df = LazyFrame::scan_parquet(file, Default::default())?;
     let mut ctx = SQLContext::new();

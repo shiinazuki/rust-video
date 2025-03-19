@@ -1,12 +1,12 @@
 use clap::{ArgMatches, Parser};
 
-use crate::ReplContext;
+use crate::{Backend, CmdExector, ReplContext, ReplDisplay};
 
-use super::{ReplCommand, ReplResult};
+use super::ReplResult;
 
 #[derive(Debug, Parser)]
 pub struct SqlOpts {
-    #[arg(short, long, help = "The SQL query")]
+    #[arg(help = "The SQL query")]
     pub query: String,
 }
 
@@ -16,11 +16,19 @@ impl SqlOpts {
     }
 }
 
-impl From<SqlOpts> for ReplCommand {
-    fn from(value: SqlOpts) -> Self {
-        ReplCommand::Sql(value)
+impl CmdExector for SqlOpts {
+    async fn execute<T: Backend>(self, backend: &mut T) -> anyhow::Result<()> {
+        let df = backend.sql(&self.query).await?;
+        df.display().await?;
+        Ok(())
     }
 }
+
+// impl From<SqlOpts> for ReplCommand {
+//     fn from(value: SqlOpts) -> Self {
+//         ReplCommand::Sql(value)
+//     }
+// }
 
 pub fn sql(args: ArgMatches, ctx: &mut ReplContext) -> ReplResult {
     let query = args

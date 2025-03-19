@@ -1,15 +1,15 @@
 use clap::{ArgMatches, Parser};
 
-use crate::ReplContext;
+use crate::{Backend, CmdExector, ReplContext};
 
-use super::{ReplCommand, ReplResult};
+use super::ReplResult;
 
 #[derive(Debug, Clone)]
 pub enum DatasetConn {
     Postgres(String),
     Csv(String),
     Parquet(String),
-    Json(String),
+    NdJson(String),
 }
 
 #[derive(Debug, Parser)]
@@ -31,11 +31,19 @@ impl ConnectOpts {
     }
 }
 
-impl From<ConnectOpts> for ReplCommand {
-    fn from(value: ConnectOpts) -> Self {
-        ReplCommand::Connect(value)
+impl CmdExector for ConnectOpts {
+    async fn execute<T: Backend>(self, backend: &mut T) -> anyhow::Result<()> {
+        backend.connect(&self).await?;
+        println!("Connected to dataset: {}", self.name);
+        Ok(())
     }
 }
+
+// impl From<ConnectOpts> for ReplCommand {
+//     fn from(value: ConnectOpts) -> Self {
+//         ReplCommand::Connect(value)
+//     }
+// }
 
 pub fn connect(args: ArgMatches, ctx: &mut ReplContext) -> ReplResult {
     let conn = args
@@ -63,8 +71,8 @@ fn verify_conn_str(s: &str) -> Result<DatasetConn, String> {
         Ok(DatasetConn::Csv(conn_str))
     } else if conn_str.ends_with(".parquet") {
         Ok(DatasetConn::Parquet(conn_str))
-    } else if conn_str.ends_with(".json") {
-        Ok(DatasetConn::Json(conn_str))
+    } else if conn_str.ends_with(".ndjson") {
+        Ok(DatasetConn::NdJson(conn_str))
     } else {
         Err(format!("Invalid connection string: {}", s))
     }

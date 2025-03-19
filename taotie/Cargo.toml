@@ -16,3 +16,4 @@ tokio = { version = "1.43.0", features = ["rt", "rt-multi-thread", "macros"] }
 clap = { version = "4.5.31", features = ["derive"] }
 reedline-repl-rs = { version = "1.2.1", features = ["derive"] }
 crossbeam-channel = "0.5.14"
+enum_dispatch = "0.3.13"

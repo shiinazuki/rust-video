@@ -46,5 +46,4 @@ fn main() -> Result<()> {
     let string = batch.column(1).as_string::<i32>();
     println!("string={} {}", string.value(0), string.value(1));
     Ok(())
-    
 }
