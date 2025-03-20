@@ -79,7 +79,7 @@ fn verify_conn_str(s: &str) -> Result<DatasetConn, String> {
 
     let exts = conn_str.split('.').rev().collect::<Vec<_>>();
     let len = exts.len();
-    let mut exts= exts.into_iter().take(len - 1);
+    let mut exts = exts.into_iter().take(len - 1);
     let ext1 = exts.next();
     let ext2 = exts.next();
     match (ext1, ext2) {
@@ -112,6 +112,7 @@ fn verify_conn_str(s: &str) -> Result<DatasetConn, String> {
             match ext1 {
                 "csv" => Ok(DatasetConn::Csv(opts)),
                 "json" | "jsonl" | "ndjson" => Ok(DatasetConn::NdJson(opts)),
+                "parquet" => Ok(DatasetConn::Parquet(s.to_string())),
                 v => Err(format!("Invalid file extension: {}", v)),
             }
         }
