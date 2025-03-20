@@ -33,7 +33,8 @@ pub struct Publisher {
     #[prost(string, tag = "3")]
     pub avatar: ::prost::alloc::string::String,
 }
-#[derive(Eq, Hash, Clone, Copy, PartialEq, ::prost::Message)]
+#[derive(Eq, Hash)]
+#[derive(Clone, Copy, PartialEq, ::prost::Message)]
 pub struct MaterializeRequest {
     #[prost(uint32, tag = "1")]
     pub id: u32,
@@ -80,10 +81,10 @@ pub mod metadata_client {
         dead_code,
         missing_docs,
         clippy::wildcard_imports,
-        clippy::let_unit_value
+        clippy::let_unit_value,
     )]
-    use tonic::codegen::http::Uri;
     use tonic::codegen::*;
+    use tonic::codegen::http::Uri;
     #[derive(Debug, Clone)]
     pub struct MetadataClient<T> {
         inner: tonic::client::Grpc<T>,
@@ -122,13 +123,14 @@ pub mod metadata_client {
             F: tonic::service::Interceptor,
             T::ResponseBody: Default,
             T: tonic::codegen::Service<
-                    http::Request<tonic::body::BoxBody>,
-                    Response = http::Response<
-                        <T as tonic::client::GrpcService<tonic::body::BoxBody>>::ResponseBody,
-                    >,
+                http::Request<tonic::body::BoxBody>,
+                Response = http::Response<
+                    <T as tonic::client::GrpcService<tonic::body::BoxBody>>::ResponseBody,
                 >,
-            <T as tonic::codegen::Service<http::Request<tonic::body::BoxBody>>>::Error:
-                Into<StdError> + std::marker::Send + std::marker::Sync,
+            >,
+            <T as tonic::codegen::Service<
+                http::Request<tonic::body::BoxBody>,
+            >>::Error: Into<StdError> + std::marker::Send + std::marker::Sync,
         {
             MetadataClient::new(InterceptedService::new(inner, interceptor))
         }
@@ -165,16 +167,25 @@ pub mod metadata_client {
         }
         pub async fn materialize(
             &mut self,
-            request: impl tonic::IntoStreamingRequest<Message = super::MaterializeRequest>,
+            request: impl tonic::IntoStreamingRequest<
+                Message = super::MaterializeRequest,
+            >,
         ) -> std::result::Result<
             tonic::Response<tonic::codec::Streaming<super::Content>>,
             tonic::Status,
         > {
-            self.inner.ready().await.map_err(|e| {
-                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
-            })?;
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static("/metadata.Metadata/Materialize");
+            let path = http::uri::PathAndQuery::from_static(
+                "/metadata.Metadata/Materialize",
+            );
             let mut req = request.into_streaming_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("metadata.Metadata", "Materialize"));
@@ -189,7 +200,7 @@ pub mod metadata_server {
         dead_code,
         missing_docs,
         clippy::wildcard_imports,
-        clippy::let_unit_value
+        clippy::let_unit_value,
     )]
     use tonic::codegen::*;
     /// Generated trait containing gRPC methods that should be implemented for use with MetadataServer.
@@ -198,12 +209,16 @@ pub mod metadata_server {
         /// Server streaming response type for the Materialize method.
         type MaterializeStream: tonic::codegen::tokio_stream::Stream<
                 Item = std::result::Result<super::Content, tonic::Status>,
-            > + std::marker::Send
+            >
+            + std::marker::Send
             + 'static;
         async fn materialize(
             &self,
             request: tonic::Request<tonic::Streaming<super::MaterializeRequest>>,
-        ) -> std::result::Result<tonic::Response<Self::MaterializeStream>, tonic::Status>;
+        ) -> std::result::Result<
+            tonic::Response<Self::MaterializeStream>,
+            tonic::Status,
+        >;
     }
     #[derive(Debug)]
     pub struct MetadataServer<T> {
@@ -226,7 +241,10 @@ pub mod metadata_server {
                 max_encoding_message_size: None,
             }
         }
-        pub fn with_interceptor<F>(inner: T, interceptor: F) -> InterceptedService<Self, F>
+        pub fn with_interceptor<F>(
+            inner: T,
+            interceptor: F,
+        ) -> InterceptedService<Self, F>
         where
             F: tonic::service::Interceptor,
         {
@@ -281,18 +299,26 @@ pub mod metadata_server {
                 "/metadata.Metadata/Materialize" => {
                     #[allow(non_camel_case_types)]
                     struct MaterializeSvc<T: Metadata>(pub Arc<T>);
-                    impl<T: Metadata> tonic::server::StreamingService<super::MaterializeRequest> for MaterializeSvc<T> {
+                    impl<
+                        T: Metadata,
+                    > tonic::server::StreamingService<super::MaterializeRequest>
+                    for MaterializeSvc<T> {
                         type Response = super::Content;
                         type ResponseStream = T::MaterializeStream;
-                        type Future =
-                            BoxFuture<tonic::Response<Self::ResponseStream>, tonic::Status>;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::ResponseStream>,
+                            tonic::Status,
+                        >;
                         fn call(
                             &mut self,
-                            request: tonic::Request<tonic::Streaming<super::MaterializeRequest>>,
+                            request: tonic::Request<
+                                tonic::Streaming<super::MaterializeRequest>,
+                            >,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
-                            let fut =
-                                async move { <T as Metadata>::materialize(&inner, request).await };
+                            let fut = async move {
+                                <T as Metadata>::materialize(&inner, request).await
+                            };
                             Box::pin(fut)
                         }
                     }
@@ -318,19 +344,23 @@ pub mod metadata_server {
                     };
                     Box::pin(fut)
                 }
-                _ => Box::pin(async move {
-                    let mut response = http::Response::new(empty_body());
-                    let headers = response.headers_mut();
-                    headers.insert(
-                        tonic::Status::GRPC_STATUS,
-                        (tonic::Code::Unimplemented as i32).into(),
-                    );
-                    headers.insert(
-                        http::header::CONTENT_TYPE,
-                        tonic::metadata::GRPC_CONTENT_TYPE,
-                    );
-                    Ok(response)
-                }),
+                _ => {
+                    Box::pin(async move {
+                        let mut response = http::Response::new(empty_body());
+                        let headers = response.headers_mut();
+                        headers
+                            .insert(
+                                tonic::Status::GRPC_STATUS,
+                                (tonic::Code::Unimplemented as i32).into(),
+                            );
+                        headers
+                            .insert(
+                                http::header::CONTENT_TYPE,
+                                tonic::metadata::GRPC_CONTENT_TYPE,
+                            );
+                        Ok(response)
+                    })
+                }
             }
         }
     }
