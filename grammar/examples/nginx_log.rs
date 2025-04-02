@@ -4,7 +4,7 @@ use std::{
     env,
     fs::File,
     io::{BufRead, BufReader},
-    sync::OnceLock,
+    sync::OnceLock, time::Instant,
 };
 
 static LOG_REGEX: OnceLock<Regex> = OnceLock::new();
@@ -24,6 +24,7 @@ struct NginxLog {
 }
 
 fn main() -> Result<()> {
+    let start = Instant::now();
     let path = env::current_dir()?
         .join("grammar")
         .join("assets")
@@ -38,7 +39,9 @@ fn main() -> Result<()> {
         let nginx_log = parse_nginx_log(&line)?;
         nginx_log_vec.push(nginx_log);
     }
-
+    
+    let duration = start.elapsed();
+    println!("{}",duration.as_millis());
     println!("{:#?}", nginx_log_vec[5]);
 
     Ok(())

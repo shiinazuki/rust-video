@@ -5,4 +5,6 @@ edition = "2024"
 
 [dependencies]
 anyhow = "1.0.97"
+chrono = { version = "0.4.40", features = ["serde"] }
 regex = "1.11.1"
+winnow = { version = "0.7.4", features = ["simd"] }
