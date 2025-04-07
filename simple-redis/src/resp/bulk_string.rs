@@ -8,20 +8,20 @@ use super::{
 };
 
 #[derive(Debug, Clone, PartialOrd, PartialEq)]
-pub struct RespNullBulkString;
+pub struct NullBulkString;
 
-impl RespEncode for RespNullBulkString {
+impl RespEncode for NullBulkString {
     fn encode(self) -> Vec<u8> {
         b"$-1\r\n".to_vec()
     }
 }
 
-impl RespDecode for RespNullBulkString {
+impl RespDecode for NullBulkString {
     const PREFIX: &'static str = "$";
 
     fn decode(buf: &mut BytesMut) -> Result<Self, RespError> {
         extract_fixed_data(buf, "$-1\r\n", "NullBulkString")?;
-        Ok(RespNullBulkString)
+        Ok(NullBulkString)
     }
 
     fn expect_length(_buf: &[u8]) -> Result<usize, RespError> {
@@ -140,7 +140,7 @@ mod tests {
 
     #[test]
     fn test_null_bulk_string_encode() {
-        let frame: RespFrame = RespNullBulkString.into();
+        let frame: RespFrame = NullBulkString.into();
         assert_eq!(frame.encode(), b"$-1\r\n");
     }
     #[test]
@@ -148,8 +148,8 @@ mod tests {
         let mut buf = BytesMut::new();
         buf.extend_from_slice(b"$-1\r\n");
 
-        let frame = RespNullBulkString::decode(&mut buf)?;
-        assert_eq!(frame, RespNullBulkString);
+        let frame = NullBulkString::decode(&mut buf)?;
+        assert_eq!(frame, NullBulkString);
 
         Ok(())
     }

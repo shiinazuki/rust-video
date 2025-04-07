@@ -2,9 +2,9 @@ use bytes::BytesMut;
 use enum_dispatch::enum_dispatch;
 
 use super::{
-    RespDecode, RespEncode, RespError,
+    RespDecode, RespError,
     array::{RespArray, RespNullArray},
-    bulk_string::{BulkString, RespNullBulkString},
+    bulk_string::{BulkString, NullBulkString},
     map::RespMap,
     null::RespNull,
     set::RespSet,
@@ -19,7 +19,7 @@ pub enum RespFrame {
     SimpleString(SimpleString),
     Error(SimpleError),
     BulkString(BulkString),
-    NullBulkString(RespNullBulkString),
+    NullBulkString(NullBulkString),
     Array(RespArray),
     NullArray(RespNullArray),
     Null(RespNull),
@@ -46,7 +46,7 @@ impl RespDecode for RespFrame {
                 let frame = i64::decode(buf)?;
                 Ok(frame.into())
             }
-            Some(b'$') => match RespNullBulkString::decode(buf) {
+            Some(b'$') => match NullBulkString::decode(buf) {
                 Ok(frame) => Ok(frame.into()),
                 Err(RespError::NotComplete) => Err(RespError::NotComplete),
                 Err(_) => {
@@ -125,11 +125,5 @@ impl From<&[u8]> for RespFrame {
 impl<const N: usize> From<&[u8; N]> for RespFrame {
     fn from(value: &[u8; N]) -> Self {
         BulkString(value.to_vec()).into()
-    }
-}
-
-impl RespEncode for () {
-    fn encode(self) -> Vec<u8> {
-        b"$-1\r\n".to_vec()
     }
 }

@@ -12,7 +12,7 @@ mod simple_string;
 mod utils;
 
 pub use array::{RespArray, RespNullArray};
-pub use bulk_string::{BulkString, RespNullBulkString};
+pub use bulk_string::{BulkString, NullBulkString};
 pub use map::RespMap;
 pub use null::RespNull;
 pub use resp_frame::RespFrame;
@@ -31,6 +31,12 @@ const CRLF_LEN: usize = CRLF.len();
 #[enum_dispatch]
 pub trait RespEncode {
     fn encode(self) -> Vec<u8>;
+}
+
+impl RespEncode for () {
+    fn encode(self) -> Vec<u8> {
+        b"$-1\r\n".to_vec()
+    }
 }
 
 pub trait RespDecode: Sized {

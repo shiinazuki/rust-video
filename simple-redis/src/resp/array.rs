@@ -82,6 +82,12 @@ impl Deref for RespArray {
     }
 }
 
+impl From<Vec<RespFrame>> for RespArray {
+    fn from(value: Vec<RespFrame>) -> Self {
+        RespArray(value)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
