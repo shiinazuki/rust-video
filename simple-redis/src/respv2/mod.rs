@@ -2,7 +2,7 @@ mod parser;
 
 use crate::{RespError, RespFrame};
 use bytes::BytesMut;
-use parser::{parse_frame, parse_frame_length};
+pub use parser::{parse_frame, parse_frame_length};
 
 pub trait RespDecodeV2: Sized {
     fn decode(buf: &mut BytesMut) -> Result<Self, RespError>;
@@ -189,7 +189,7 @@ mod test {
         let buf = b"#t\r\n";
         let len = RespFrame::expect_length(buf).unwrap();
         assert_eq!(len, buf.len());
-        
+
         let buf = b"#f\r\n";
         let len = RespFrame::expect_length(buf).unwrap();
         assert_eq!(len, buf.len());

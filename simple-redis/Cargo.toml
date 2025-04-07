@@ -20,5 +20,13 @@ tokio-stream = "0.1.17"
 tokio-util = { version = "0.7.13", features = ["codec"] }
 tracing = "0.1.41"
 tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
-futures = { version = "0.3.31", default-features = false}
+futures = { version = "0.3.31", default-features = false }
 winnow = { version = "0.7.4", features = ["simd"] }
+
+[dev-dependencies]
+criterion = { version = "0.5.1", features = ["html_reports"] }
+
+
+[[bench]]
+name = "resp"
+harness = false
