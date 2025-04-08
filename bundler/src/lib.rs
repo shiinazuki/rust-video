@@ -2,7 +2,7 @@ mod bundle;
 
 use anyhow::Result;
 
-pub use bundle::run_bundle;
+pub use bundle::{Options, run_bundle};
 
 pub type ModulePath = String;
 pub type ModuleSource = String;
