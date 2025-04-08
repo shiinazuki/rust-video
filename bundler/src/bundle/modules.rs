@@ -14,30 +14,32 @@ use sha::{
 };
 use url::Url;
 
-use crate::{ModuleLoader, ModulePath, ModuleSource, transpiler::TypeScript};
+use crate::{ModuleLoader, ModulePath, ModuleSource};
 use lazy_static::lazy_static;
+
+use super::transpiler::TypeScript;
 
 lazy_static! {
     pub static ref CORE_MODULES: HashMap<&'static str, &'static str> = {
         let modules = vec![
-            ("console", include_str!("./js/console.js")),
-            ("events", include_str!("./js/events.js")),
-            ("process", include_str!("./js/process.js")),
-            ("timers", include_str!("./js/timers.js")),
-            ("assert", include_str!("./js/assert.js")),
-            ("util", include_str!("./js/util.js")),
-            ("fs", include_str!("./js/fs.js")),
-            ("perf_hooks", include_str!("./js/perf-hooks.js")),
-            ("colors", include_str!("./js/colors.js")),
-            ("dns", include_str!("./js/dns.js")),
-            ("net", include_str!("./js/net.js")),
-            ("test", include_str!("./js/test.js")),
-            ("stream", include_str!("./js/stream.js")),
-            ("http", include_str!("./js/http.js")),
-            ("@web/abort", include_str!("./js/abort-controller.js")),
-            ("@web/text_encoding", include_str!("./js/text-encoding.js")),
-            ("@web/clone", include_str!("./js/structured-clone.js")),
-            ("@web/fetch", include_str!("./js/fetch.js")),
+            ("console", include_str!("../js/console.js")),
+            ("events", include_str!("../js/events.js")),
+            ("process", include_str!("../js/process.js")),
+            ("timers", include_str!("../js/timers.js")),
+            ("assert", include_str!("../js/assert.js")),
+            ("util", include_str!("../js/util.js")),
+            ("fs", include_str!("../js/fs.js")),
+            ("perf_hooks", include_str!("../js/perf-hooks.js")),
+            ("colors", include_str!("../js/colors.js")),
+            ("dns", include_str!("../js/dns.js")),
+            ("net", include_str!("../js/net.js")),
+            ("test", include_str!("../js/test.js")),
+            ("stream", include_str!("../js/stream.js")),
+            ("http", include_str!("../js/http.js")),
+            ("@web/abort", include_str!("../js/abort-controller.js")),
+            ("@web/text_encoding", include_str!("../js/text-encoding.js")),
+            ("@web/clone", include_str!("../js/structured-clone.js")),
+            ("@web/fetch", include_str!("../js/fetch.js")),
         ];
         HashMap::from_iter(modules.into_iter())
     };
