@@ -9,6 +9,7 @@ askama = "0.13.0"
 blake3 = "1.8.1"
 bundler = { workspace = true }
 clap = { version = "4.5.35", features = ["derive"] }
+dino-macros = { workspace = true }
 dialoguer = { version = "0.11.0", features = [
     "completion",
     "fuzzy-matcher",

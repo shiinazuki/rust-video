@@ -1,7 +1,8 @@
 use std::collections::HashMap;
 
 use anyhow::Result;
-use rquickjs::{Context, FromJs, Function, IntoJs, Object, Promise, Runtime};
+use dino_macros::{FromJs, IntoJs};
+use rquickjs::{Context, Function, Object, Promise, Runtime};
 use typed_builder::TypedBuilder;
 
 #[allow(unused)]
@@ -43,7 +44,7 @@ impl JsWorker {
     }
 }
 
-#[derive(Debug, TypedBuilder)]
+#[derive(Debug, TypedBuilder, IntoJs)]
 pub struct Req {
     pub headers: HashMap<String, String>,
 
@@ -57,40 +58,40 @@ pub struct Req {
     pub body: Option<String>,
 }
 
-impl<'js> IntoJs<'js> for Req {
-    fn into_js(self, ctx: &rquickjs::Ctx<'js>) -> rquickjs::Result<rquickjs::Value<'js>> {
-        let obj = Object::new(ctx.clone())?;
-        obj.set("headers", self.headers)?;
-        obj.set("method", self.method)?;
-        obj.set("url", self.url)?;
-        obj.set("body", self.body)?;
+// impl<'js> IntoJs<'js> for Req {
+//     fn into_js(self, ctx: &rquickjs::Ctx<'js>) -> rquickjs::Result<rquickjs::Value<'js>> {
+//         let obj = Object::new(ctx.clone())?;
+//         obj.set("headers", self.headers)?;
+//         obj.set("method", self.method)?;
+//         obj.set("url", self.url)?;
+//         obj.set("body", self.body)?;
 
-        Ok(obj.into())
-    }
-}
+//         Ok(obj.into())
+//     }
+// }
 
-#[derive(Debug)]
+#[derive(Debug, FromJs)]
 pub struct Res {
     pub status: u16,
     pub headers: HashMap<String, String>,
     pub body: Option<String>,
 }
 
-impl<'js> FromJs<'js> for Res {
-    fn from_js(_ctx: &rquickjs::Ctx<'js>, value: rquickjs::Value<'js>) -> rquickjs::Result<Self> {
-        let obj = value.into_object().unwrap();
+// impl<'js> FromJs<'js> for Res {
+//     fn from_js(_ctx: &rquickjs::Ctx<'js>, value: rquickjs::Value<'js>) -> rquickjs::Result<Self> {
+//         let obj = value.into_object().unwrap();
 
-        let status: u16 = obj.get("status")?;
-        let headers: HashMap<String, String> = obj.get("headers")?;
-        let body: Option<String> = obj.get("body")?;
+//         let status: u16 = obj.get("status")?;
+//         let headers: HashMap<String, String> = obj.get("headers")?;
+//         let body: Option<String> = obj.get("body")?;
 
-        Ok(Res {
-            status,
-            headers,
-            body,
-        })
-    }
-}
+//         Ok(Res {
+//             status,
+//             headers,
+//             body,
+//         })
+//     }
+// }
 
 #[cfg(test)]
 mod tests {
