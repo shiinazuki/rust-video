@@ -1,8 +1,11 @@
-import { pprint } from './inner.ts';
-
-async function hello() {
-    await print('hello, shiina');
-    return 'hello';
+async function hello(req) {
+  return {
+    status: 200,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(req),
+  }
 }
 
 export { hello };
