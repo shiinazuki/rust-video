@@ -1,9 +1,8 @@
-async function hello(req: Request, res: Response) {
-  return new Response('Hello, world!', {
-    headers: {
-      'Content-Type': 'text/plain',
-    },
-  });
+import { pprint } from './inner.ts';
+
+async function hello() {
+    await print('hello, shiina');
+    return 'hello';
 }
 
 export { hello };
