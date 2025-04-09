@@ -12,7 +12,13 @@ members = [
     "simple-redis",
     "chat-test",
     "crm-server",
-    "crm-user-stat", "crm-metadata", "crm-send", "taotie", "grammar", "bundler",
+    "crm-user-stat",
+    "crm-metadata",
+    "crm-send",
+    "taotie",
+    "grammar",
+    "bundler",
+    "dino",
 ]
 resolver = "2"
 
@@ -25,3 +31,4 @@ chat-notify-server = { path = "./chat-notify-server" }
 crm-user-stat = { path = "./crm-user-stat" }
 crm-metadata = { path = "./crm-metadata" }
 crm-send = { path = "./crm-send" }
+bundler = { path = "./bundler" }
