@@ -1,5 +1,5 @@
 name: {{ name }}
-route:
-    - path: /api/hello
-      method: GET
-      handler: hello
+routes:
+    /api/hello:
+      - method: GET
+        handler: hello
