@@ -2,6 +2,7 @@ mod config;
 mod engine;
 mod error;
 mod router;
+mod middlewares;
 
 use anyhow::Result;
 use axum::{
@@ -14,6 +15,7 @@ use axum::{
 use dashmap::DashMap;
 use indexmap::IndexMap;
 use matchit::Match;
+use middlewares::ServerTimeLayer;
 use std::collections::HashMap;
 use tokio::net::TcpListener;
 use tracing::info;
@@ -64,6 +66,7 @@ pub async fn start_server(port: u16, routers: Vec<TenentRouter>) -> Result<()> {
     let state = AppState::new(map);
     let app = Router::new()
         .route("/{*wildcard}", any(handler))
+        .layer(ServerTimeLayer)
         .with_state(state);
 
     axum::serve(listener, app.into_make_service()).await?;
