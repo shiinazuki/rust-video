@@ -1,27 +1,27 @@
 mod config;
+mod engine;
 mod error;
 mod router;
-mod engine;
 
 use anyhow::Result;
 use axum::{
     body::Bytes,
     extract::{Query, State},
     http::{HeaderMap, Method, Uri},
-    response::{IntoResponse, Json},
+    response::{IntoResponse, Response},
     routing::{Router, any},
 };
 use dashmap::DashMap;
 use indexmap::IndexMap;
-use serde_json::json;
+use matchit::Match;
 use std::collections::HashMap;
 use tokio::net::TcpListener;
 use tracing::info;
 
 pub use config::*;
+pub use engine::*;
 pub use error::AppError;
 pub use router::*;
-pub use engine::*;
 
 type ProjectRoutes = IndexMap<String, Vec<ProjectRoute>>;
 
@@ -37,12 +37,31 @@ impl AppState {
     }
 }
 
-pub async fn start_server(port: u16, routers: DashMap<String, SwappableAppRouter>) -> Result<()> {
+#[derive(Clone)]
+pub struct TenentRouter {
+    host: String,
+    router: SwappableAppRouter,
+}
+
+impl TenentRouter {
+    pub fn new(host: impl Into<String>, router: SwappableAppRouter) -> Self {
+        Self {
+            host: host.into(),
+            router,
+        }
+    }
+}
+
+pub async fn start_server(port: u16, routers: Vec<TenentRouter>) -> Result<()> {
     let addr = format!("0.0.0.0:{port}");
     let listener = TcpListener::bind(addr).await?;
 
     info!("listening on {}", listener.local_addr()?);
-    let state = AppState::new(routers);
+    let map = DashMap::new();
+    for TenentRouter { host, router } in routers {
+        map.insert(host, router);
+    }
+    let state = AppState::new(map);
     let app = Router::new()
         .route("/{*wildcard}", any(handler))
         .with_state(state);
@@ -51,51 +70,73 @@ pub async fn start_server(port: u16, routers: DashMap<String, SwappableAppRouter
     Ok(())
 }
 
-// we only support JSON requests and return JSON responses
 #[allow(unused)]
 async fn handler(
     State(state): State<AppState>,
     headers: HeaderMap,
     method: Method,
     uri: Uri,
-    Query(query): Query<serde_json::Value>,
+    Query(query): Query<HashMap<String, String>>,
     body: Bytes,
 ) -> Result<impl IntoResponse, AppError> {
-    // 获取 host header
+    let router = get_router_by_host(&headers, state)?;
+    let uri_clone = uri.clone();
+    let matched = router.match_it(method.clone(), uri_clone.path())?;
+    let req = assemble_req(&matched, headers, body, method, uri, query)?;
+    let handler = matched.value;
+    let worker = JsWorker::try_new(&router.code)?;
+    let res = worker.run(handler, req)?;
+
+    Ok(Response::from(res))
+}
+
+fn get_router_by_host(headers: &HeaderMap, state: AppState) -> Result<AppRouter, AppError> {
     let host = headers
         .get(axum::http::header::HOST)
         .and_then(|h| h.to_str().ok())
         .unwrap_or("");
 
-    // 记录获取到的 host
     info!("host: {:?}", host);
-    let host_str = host.split(':').next().unwrap_or(host); // 只保留主机名部分
+    let host_str = host.split(':').next().unwrap_or(host);
 
-    // 获取路由器
     let router = state
         .routers
         .get(host_str)
         .ok_or(AppError::HostNotFound(host_str.to_string()))?
         .load();
 
-    // 匹配路由
-    let matched = router.match_it(method, uri.path())?; // 使用请求的实际方法和路径
-    let handler = matched.value;
+    Ok(router)
+}
+
+fn assemble_req(
+    matched: &Match<&str>,
+    headers: HeaderMap,
+    body: Bytes,
+    method: Method,
+    uri: Uri,
+    query: HashMap<String, String>,
+) -> Result<Req, AppError> {
     let params: HashMap<String, String> = matched
         .params
         .iter()
         .map(|(k, v)| (k.to_string(), v.to_string()))
         .collect();
 
-    // 将请求体转换为 JSON
-    let body: serde_json::Value =
-        serde_json::from_slice(&body).map_err(|_| AppError::InvalidBody)?;
+    let headers = headers
+        .iter()
+        .map(|(k, v)| (k.to_string(), v.to_str().unwrap().to_string()))
+        .collect();
 
-    // 返回 JSON 响应
-    Ok(Json(json!({
-        "handler": handler,
-        "params": params,
-        "query": query,
-        "body": body,
-    })))
+    let body = String::from_utf8(body.into()).ok();
+
+    let req = Req::builder()
+        .method(method.to_string())
+        .url(uri.to_string())
+        .query(query)
+        .params(params)
+        .headers(headers)
+        .body(body.clone())
+        .build();
+
+    Ok(req)
 }
