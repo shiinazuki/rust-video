@@ -33,3 +33,4 @@ crm-metadata = { path = "./crm-metadata" }
 crm-send = { path = "./crm-send" }
 bundler = { path = "./bundler" }
 dino-macros = { path = "./dino-macros" }
+dino-server = { path = "./dino-server" }

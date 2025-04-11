@@ -1,6 +1,7 @@
 mod config;
 mod error;
 mod router;
+mod engine;
 
 use anyhow::Result;
 use axum::{
@@ -20,6 +21,7 @@ use tracing::info;
 pub use config::*;
 pub use error::AppError;
 pub use router::*;
+pub use engine::*;
 
 type ProjectRoutes = IndexMap<String, Vec<ProjectRoute>>;
 

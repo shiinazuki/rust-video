@@ -46,6 +46,7 @@ impl JsWorker {
 
 #[derive(Debug, TypedBuilder, IntoJs)]
 pub struct Req {
+    #[builder(default)]
     pub headers: HashMap<String, String>,
 
     #[builder(setter(into))]
