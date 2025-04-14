@@ -74,6 +74,7 @@ impl AppRouterInner {
 #[derive(Clone)]
 pub struct AppRouter(Arc<AppRouterInner>);
 
+#[allow(warnings)]
 impl AppRouter {
     pub fn match_it<'m, 'p>(
         &'m self,
