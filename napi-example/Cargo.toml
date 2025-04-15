@@ -10,7 +10,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 napi-algo = { workspace = true }
-napi = { version = "2", default-features = true, features = ["full"] }
+napi = { version = "2", default-features = false, features = ["full"] }
 napi-derive = "2"
 
 
