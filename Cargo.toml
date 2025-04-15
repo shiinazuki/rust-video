@@ -22,6 +22,7 @@ members = [
     "dino-macros",
     "dino-server",
     "napi-example",
+    "napi-algo",
 ]
 resolver = "2"
 
@@ -37,3 +38,4 @@ crm-send = { path = "./crm-send" }
 bundler = { path = "./bundler" }
 dino-macros = { path = "./dino-macros" }
 dino-server = { path = "./dino-server" }
+napi-algo = { path = "./napi-algo" }
