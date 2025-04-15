@@ -18,7 +18,10 @@ members = [
     "taotie",
     "grammar",
     "bundler",
-    "dino", "dino-macros", "dino-server",
+    "dino",
+    "dino-macros",
+    "dino-server",
+    "napi-example",
 ]
 resolver = "2"
 
